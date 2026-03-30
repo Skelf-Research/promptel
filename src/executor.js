@@ -1,7 +1,7 @@
 // executor.js
 const { createProvider } = require('./provider');
 
-class NudgeLangExecutor {
+class PromptelExecutor {
     constructor(providerType, apiKey) {
         this.provider = createProvider(providerType, apiKey);
     }
@@ -64,10 +64,22 @@ class NudgeLangExecutor {
     }
 
     executeParams(section, context) {
+        // Handle incomplete AST where fields might not be present
+        if (!section.fields || !Array.isArray(section.fields)) {
+            return;
+        }
+        
         for (const param of section.fields) {
-            if (!(param.name in context.params)) {
+            // Handle default values
+            if (!(param.name in context.params) && param.hasOwnProperty('defaultValue')) {
+                context.params[param.name] = param.defaultValue;
+            }
+            
+            // Check if required parameter is missing
+            if (!(param.name in context.params) && !param.isOptional) {
                 throw new Error(`Missing required parameter: ${param.name}`);
             }
+            
             // Type checking could be added here
         }
     }
@@ -75,8 +87,10 @@ class NudgeLangExecutor {
     async executeBody(section, context) {
         let bodyContent = '';
         for (const content of section.content) {
-            if (content.type === 'text') {
-                bodyContent += this.interpolate(content.value, context);
+            if (content.type === 'TextBlock') {
+                // Extract the text from the backticks
+                const text = content.content.substring(1, content.content.length - 1);
+                bodyContent += this.interpolate(text, context);
             }
             // Handle other content types as needed
         }
@@ -237,4 +251,4 @@ class NudgeLangExecutor {
     }
 }
 
-module.exports = NudgeLangExecutor;
+module.exports = PromptelExecutor;

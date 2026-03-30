@@ -3,13 +3,13 @@
 const fs = require('fs');
 const path = require('path');
 const { program } = require('commander');
-const NudgeLangParser = require('./parser');
-const NudgeLangExecutor = require('./executor');
+const PromptelParser = require('./parser');
+const PromptelExecutor = require('./executor');
 
 program
   .version('1.0.0')
-  .description('NudgeLang CLI - Execute NudgeLang prompts')
-  .requiredOption('-f, --file <path>', 'Path to the NudgeLang file')
+  .description('Promptel CLI - Execute Promptel prompts')
+  .requiredOption('-f, --file <path>', 'Path to the Promptel file')
   .requiredOption('-p, --provider <type>', 'Provider type (openai, groq, or claude)')
   .requiredOption('-k, --api-key <key>', 'API key for the selected provider')
   .option('-o, --output <path>', 'Output file path (if not specified, prints to console)')
@@ -21,15 +21,15 @@ const options = program.opts();
 
 async function main() {
   try {
-    // Read the NudgeLang file
-    const nudgeCode = fs.readFileSync(options.file, 'utf-8');
+    // Read the Promptel file
+    const promptelCode = fs.readFileSync(options.file, 'utf-8');
 
-    // Parse the NudgeLang code
-    const parser = new NudgeLangParser();
-    const ast = parser.parse(nudgeCode);
+    // Parse the Promptel code
+    const parser = new PromptelParser();
+    const ast = parser.parse(promptelCode);
 
     // Create an executor
-    const executor = new NudgeLangExecutor(options.provider, options.apiKey);
+    const executor = new PromptelExecutor(options.provider, options.apiKey);
 
     // Parse the params JSON
     const params = JSON.parse(options.params);

@@ -1,6 +1,6 @@
 // executor.test.js
-const NudgeLangExecutor = require('../src/executor');
-const NudgeLangParser = require('../src/parser');
+const PromptelExecutor = require('../src/executor');
+const PromptelParser = require('../src/parser');
 
 jest.mock('../src/provider', () => ({
   createProvider: jest.fn(() => ({
@@ -10,136 +10,17 @@ jest.mock('../src/provider', () => ({
     }),
   })),
 }));
-describe('NudgeLangExecutor', () => {
+describe('PromptelExecutor', () => {
   let executor;
   let parser;
 
   beforeEach(() => {
     // Read provider and key from environment variables
-    const provider = process.env.NUDGELANG_PROVIDER || 'openai';
-    const apiKey = process.env.NUDGELANG_API_KEY || 'test-api-key';
+    const provider = process.env.PROMPTEL_PROVIDER || 'openai';
+    const apiKey = process.env.PROMPTEL_API_KEY || 'test-api-key';
     
-    executor = new NudgeLangExecutor(provider, apiKey);
-    parser = new NudgeLangParser();
+    executor = new PromptelExecutor(provider, apiKey);
+    parser = new PromptelParser();
   });
 
-  test('should execute a simple prompt', async () => {
-    const code = `
-      prompt SimplePrompt {
-        body {
-          text\`Hello, world!\`;
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast);
-    expect(result).toBe('Task:\nHello, world!');
-  });
-
-  test('should handle params correctly', async () => {
-    const code = `
-      prompt ParamPrompt {
-        params {
-          name: string;
-          age: number = 30;
-        }
-        body {
-          text\`Hello, \${params.name}! You are \${params.age} years old.\`;
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast, { name: 'Alice' });
-    expect(result).toBe('Task:\nHello, Alice! You are 30 years old.');
-  });
-
-  test('should execute if statements', async () => {
-    const code = `
-      prompt ConditionalPrompt {
-        params {
-          condition: boolean;
-        }
-        body {
-          if (params.condition) {
-            text\`Condition is true\`;
-          } else {
-            text\`Condition is false\`;
-          }
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const resultTrue = await executor.execute(ast, { condition: true });
-    expect(resultTrue).toBe('Task:\nCondition is true');
-    const resultFalse = await executor.execute(ast, { condition: false });
-    expect(resultFalse).toBe('Task:\nCondition is false');
-  });
-
-  test('should execute for loops', async () => {
-    const code = `
-      prompt LoopPrompt {
-        params {
-          items: string[];
-        }
-        body {
-          for (item of params.items) {
-            text\`Item: \${item}\n\`;
-          }
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast, { items: ['apple', 'banana', 'cherry'] });
-    expect(result).toBe('Task:\nItem: apple\nItem: banana\nItem: cherry\n');
-  });
-
-  test('should handle techniques', async () => {
-    const code = `
-      prompt TechniquePrompt {
-        technique {
-          chainOfThought {
-            step("Step 1") {
-              text\`This is step 1\`;
-            }
-            step("Step 2") {
-              text\`This is step 2\`;
-            }
-          }
-        }
-        body {
-          text\`Final answer\`;
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast);
-    expect(result).toContain('Chain of Thought:');
-    expect(result).toContain('Step: Step 1');
-    expect(result).toContain('This is step 1');
-    expect(result).toContain('Step: Step 2');
-    expect(result).toContain('This is step 2');
-    expect(result).toContain('Task:\nFinal answer');
-  });
-
-  test('should handle hooks', async () => {
-    const code = `
-      prompt HookPrompt {
-        params {
-          name: string;
-        }
-        hooks {
-          preProcess: (input) => {
-            input.name = input.name.toUpperCase();
-            return input;
-          }
-        }
-        body {
-          text\`Hello,  \${params.name}!\`;
-        }
-      }
-    `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast, { name: 'Alice' });
-    expect(result).toBe('Task:\nHello, Alice!');
-  });
-});
+  test('should execute a simple prompt', async () => {\n    const code = `\n      prompt SimplePrompt {\n        body {\n          text`Hello, world!`;\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const result = await executor.execute(ast);\n    expect(result).toBe('Task:\\nHello, world!');\n  });\n\n  test('should handle params correctly', async () => {\n    const code = `\n      prompt ParamPrompt {\n        params {\n          name: string;\n          age: number = 30;\n        }\n        body {\n          text`Hello, ${params.name}! You are ${params.age} years old.`;\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const result = await executor.execute(ast, { name: 'Alice' });\n    expect(result).toBe('Task:\\nHello, Alice! You are 30 years old.');\n  });\n\n  test('should execute if statements', async () => {\n    const code = `\n      prompt ConditionalPrompt {\n        params {\n          condition: boolean;\n        }\n        body {\n          if (params.condition) {\n            text`Condition is true`;\n          } else {\n            text`Condition is false`;\n          }\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const resultTrue = await executor.execute(ast, { condition: true });\n    expect(resultTrue).toBe('Task:\\nCondition is true');\n    const resultFalse = await executor.execute(ast, { condition: false });\n    expect(resultFalse).toBe('Task:\\nCondition is false');\n  });\n\n  test('should execute for loops', async () => {\n    const code = `\n      prompt LoopPrompt {\n        params {\n          items: string[];\n        }\n        body {\n          for (item of params.items) {\n            text`Item: ${item}\\n`;\n          }\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const result = await executor.execute(ast, { items: ['apple', 'banana', 'cherry'] });\n    expect(result).toBe('Task:\\nItem: apple\\nItem: banana\\nItem: cherry\\n');\n  });\n\n  test('should handle techniques', async () => {\n    const code = `\n      prompt TechniquePrompt {\n        technique {\n          chainOfThought {\n            step(\"Step 1\") {\n              text`This is step 1`;\n            }\n            step(\"Step 2\") {\n              text`This is step 2`;\n            }\n          }\n        }\n        body {\n          text`Final answer`;\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const result = await executor.execute(ast);\n    expect(result).toContain('Chain of Thought:');\n    expect(result).toContain('Step: Step 1');\n    expect(result).toContain('This is step 1');\n    expect(result).toContain('Step: Step 2');\n    expect(result).toContain('This is step 2');\n    expect(result).toContain('Task:\\nFinal answer');\n  });\n\n  test('should handle hooks', async () => {\n    const code = `\n      prompt HookPrompt {\n        params {\n          name: string;\n        }\n        hooks {\n          preProcess: (input) => {\n            input.name = input.name.toUpperCase();\n            return input;\n          }\n        }\n        body {\n          text`Hello,  ${params.name}!`;\n        }\n      }\n    `;\n    const ast = parser.parse(code);\n    const result = await executor.execute(ast, { name: 'Alice' });\n    expect(result).toBe('Task:\\nHello, Alice!');\n  });

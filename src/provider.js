@@ -9,7 +9,7 @@ const Anthropic = require('@anthropic-ai/sdk');
 
 class ProviderInterface {
   constructor() {
-    this.apiKey = process.env.NUDGELANG_API_KEY;
+    this.apiKey = process.env.PROMPTEL_API_KEY;
     if (!this.apiKey) {
       throw new Error('API key not found in environment variables');
     }
@@ -86,7 +86,7 @@ class ClaudeProvider extends ProviderInterface {
 }
 
 function createProvider(type) {
-  const providerType = type || process.env.NUDGELANG_PROVIDER || 'openai';
+  const providerType = type || process.env.PROMPTEL_PROVIDER || 'openai';
   
   switch (providerType.toLowerCase()) {
     case 'openai':

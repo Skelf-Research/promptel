@@ -1,8 +1,8 @@
 {
-  "name": "nudgelang",
+  "name": "promptel",
   "version": "0.1.0",
   "bin": {
-    "nudge": "./src/cli.js"
+    "promptel": "./src/cli.js"
   },
   "description": "A declarative language for crafting sophisticated prompts for Large Language Models",
   "main": "src/index.js",
@@ -27,15 +27,16 @@
     "openai": "^4.64.0"
   },
   "devDependencies": {
+    "@babel/preset-env": "^7.28.3",
     "eslint": "^7.32.0",
     "jest": "^27.5.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/terraprompt/nudgelang.git"
+    "url": "https://github.com/terraprompt/promptel.git"
   },
   "bugs": {
-    "url": "https://github.com/terraprompt/nudgelang/issues"
+    "url": "https://github.com/terraprompt/promptel/issues"
   },
-  "homepage": "https://github.com/terraprompt/nudgelang#readme"
+  "homepage": "https://github.com/terraprompt/promptel#readme"
 }

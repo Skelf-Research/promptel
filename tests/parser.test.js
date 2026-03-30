@@ -1,11 +1,11 @@
 // parser.test.js
-const NudgeLangParser = require('../src/parser');
+const PromptelParser = require('../src/parser');
 
-describe('NudgeLangParser', () => {
+describe('PromptelParser', () => {
   let parser;
 
   beforeEach(() => {
-    parser = new NudgeLangParser();
+    parser = new PromptelParser();
   });
 
   test('should parse a simple prompt', () => {

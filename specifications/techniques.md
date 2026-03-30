@@ -1,6 +1,6 @@
-# Advanced Techniques in NudgeLang
+# Advanced Techniques in Promptel
 
-This document provides in-depth explanations and examples of the advanced prompting techniques supported by NudgeLang. These techniques can significantly enhance the capabilities and performance of your prompts when working with Large Language Models (LLMs).
+This document provides in-depth explanations and examples of the advanced prompting techniques supported by Promptel. These techniques can significantly enhance the capabilities and performance of your prompts when working with Large Language Models (LLMs).
 
 ## Table of Contents
 

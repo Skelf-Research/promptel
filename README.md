@@ -1,12 +1,12 @@
-# NudgeLang0: A Declarative Language for LLM Prompts
+# Promptel: A Declarative Language for LLM Prompts
 
-[![GitHub license](https://img.shields.io/github/license/nudgelang/nudgelang0.svg)](https://github.com/nudgelang/nudgelang0/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/nudgelang/nudgelang0.svg)](https://github.com/nudgelang/nudgelang0/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/nudgelang/nudgelang0.svg)](https://github.com/nudgelang/nudgelang0/issues)
+[![GitHub license](https://img.shields.io/github/license/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/issues)
 
 [EXPERIMENTAL]
 
-NudgeLang0 is a powerful, declarative language designed for crafting sophisticated prompts for Large Language Models (LLMs). It provides a structured, modular, and reusable approach to prompt engineering, incorporating advanced techniques and best practices in the field.
+Promptel is a powerful, declarative language designed for crafting sophisticated prompts for Large Language Models (LLMs). It provides a structured, modular, and reusable approach to prompt engineering, incorporating advanced techniques and best practices in the field.
 
 ## Table of Contents
 
@@ -33,15 +33,15 @@ NudgeLang0 is a powerful, declarative language designed for crafting sophisticat
 
 ## Installation
 
-To install NudgeLang0, use npm:
+To install Promptel, use npm:
 
 ```bash
-npm install nudgelang0
+npm install promptel
 ```
 
 ## Quick Start
 
-Here's a simple example to get you started with NudgeLang0:
+Here's a simple example to get you started with Promptel:
 
 ```nudgelang
 prompt SimpleMathSolver {
@@ -90,9 +90,9 @@ prompt SimpleMathSolver {
 To use this prompt:
 
 ```javascript
-import { parsePrompt, executePrompt } from 'nudgelang0';
+import { parsePrompt, executePrompt } from 'promptel';
 
-const promptCode = '...'; // Your NudgeLang0 code here
+const promptCode = '...'; // Your Promptel code here
 const parsedPrompt = parsePrompt(promptCode);
 
 const result = await executePrompt(parsedPrompt, {
@@ -105,7 +105,7 @@ console.log(result.steps);    // Outputs the reasoning steps
 
 ## Language Overview
 
-NudgeLang0 is structured into several key sections that make prompt engineering more manageable:
+Promptel is structured into several key sections that make prompt engineering more manageable:
 
 - **meta**: Metadata about the prompt (name, version, description)
 - **params**: Input parameters for the prompt (with type safety)
@@ -115,11 +115,11 @@ NudgeLang0 is structured into several key sections that make prompt engineering 
 - **output**: Specification for the expected output (structure and format)
 - **hooks**: Pre-processing and post-processing logic (custom transformations)
 
-For a complete language specification, please refer to our [Language Guide](https://github.com/nudgelang/nudgelang0/blob/main/specs/LANGUAGE_GUIDE.md).
+For a complete language specification, please refer to our [Language Guide](./specifications/language.md).
 
 ## Advanced Techniques
 
-NudgeLang0 supports a variety of advanced prompting techniques that can significantly improve your LLM interactions:
+Promptel supports a variety of advanced prompting techniques that can significantly improve your LLM interactions:
 
 - Chain of Thought (CoT): Break down complex problems into manageable steps
 - Tree of Thoughts (ToT): Explore multiple solution paths simultaneously
@@ -130,30 +130,30 @@ NudgeLang0 supports a variety of advanced prompting techniques that can signific
 - Automatic Prompt Engineering (APE): Optimize prompts automatically
 - Expert Prompting: Leverage domain-specific knowledge
 
-For details on how to use these techniques, check our [Advanced Techniques Guide](https://github.com/nudgelang/nudgelang0/blob/main/specs/ADVANCED_TECHNIQUES.md).
+For details on how to use these techniques, check our [Advanced Techniques Guide](./specifications/techniques.md).
 
 ## Examples
 
 We provide a variety of examples to help you get started:
 
-- [Simple Math Solver](https://github.com/nudgelang/nudgelang0/blob/main/examples/math_solver.nudge)
-- [Creative Writing Assistant](https://github.com/nudgelang/nudgelang0/blob/main/examples/creative_writer.nudge)
-- [Multi-step Reasoning Problem Solver](https://github.com/nudgelang/nudgelang0/blob/main/examples/problem_solver.nudge)
+- [Simple Math Solver](https://github.com/terraprompt/promptel/blob/main/examples/math_solver.nudge)
+- [Creative Writing Assistant](https://github.com/terraprompt/promptel/blob/main/examples/creative_writer.nudge)
+- [Multi-step Reasoning Problem Solver](https://github.com/terraprompt/promptel/blob/main/examples/problem_solver.nudge)
 
 ## API Reference
 
-For detailed information about the NudgeLang0 API, including the `parsePrompt` and `executePrompt` functions, please refer to our [API Documentation](https://github.com/nudgelang/nudgelang0/blob/main/specs/API.md).
+For detailed information about the Promptel API, including the `parsePrompt` and `executePrompt` functions, please refer to our [API Documentation](https://github.com/terraprompt/promptel/blob/main/specs/API.md).
 
 ## Contributing
 
-We welcome contributions to NudgeLang0! Whether you're fixing bugs, adding features, or improving documentation, your help makes NudgeLang0 better for everyone. Please see our [Contributing Guide](https://github.com/nudgelang/nudgelang0/blob/main/CONTRIBUTING.md) for more information on how to get started.
+We welcome contributions to Promptel! Whether you're fixing bugs, adding features, or improving documentation, your help makes Promptel better for everyone. Please see our [Contributing Guide](https://github.com/terraprompt/promptel/blob/main/CONTRIBUTING.md) for more information on how to get started.
 
 ## License
 
-NudgeLang0 is released under the MIT License. See the [LICENSE](https://github.com/nudgelang/nudgelang0/blob/main/LICENSE) file for more details.
+Promptel is released under the MIT License. See the [LICENSE](https://github.com/terraprompt/promptel/blob/main/LICENSE) file for more details.
 
 ---
 
-For more information, updates, and community discussions, please visit our [GitHub repository](https://github.com/nudgelang/nudgelang0). If you encounter any issues or have suggestions, please [open an issue](https://github.com/nudgelang/nudgelang0/issues/new).
+For more information, updates, and community discussions, please visit our [GitHub repository](https://github.com/terraprompt/promptel). If you encounter any issues or have suggestions, please [open an issue](https://github.com/terraprompt/promptel/issues/new).
 
-Happy prompting with NudgeLang0! 🚀
+Happy prompting with Promptel! 🚀

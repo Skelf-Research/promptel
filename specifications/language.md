@@ -1,6 +1,6 @@
-# NudgeLang Language Guide
+# Promptel Language Guide
 
-NudgeLang is a declarative language designed for crafting sophisticated prompts for Large Language Models (LLMs). This guide provides a comprehensive overview of the language syntax, features, and advanced techniques.
+Promptel is a declarative language designed for crafting sophisticated prompts for Large Language Models (LLMs). This guide provides a comprehensive overview of the language syntax, features, and advanced techniques.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ NudgeLang is a declarative language designed for crafting sophisticated prompts 
 
 ## Basic Structure
 
-A NudgeLang prompt consists of several optional sections, each serving a specific purpose:
+A Promptel prompt consists of several optional sections, each serving a specific purpose:
 
 ```nudgelang
 prompt PromptName {
