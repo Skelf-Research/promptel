@@ -22,7 +22,7 @@ describe('PromptelParser', () => {
     expect(ast.prompts[0].type).toBe('Prompt');
     expect(ast.prompts[0].name).toBe('SimplePrompt');
     expect(ast.prompts[0].sections.length).toBe(1);
-    expect(ast.prompts[0].sections[0].type).toBe('BodySection');
+    expect(ast.prompts[0].sections[0].type).toBe('body');
   });
 
   test('should parse interpolation in text blocks', () => {
@@ -101,7 +101,7 @@ describe('PromptelParser', () => {
       }
     `;
     const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('BodySection');
+    expect(ast.prompts[0].sections[0].type).toBe('body');
     expect(ast.prompts[0].sections[0].content.length).toBe(2);
   });
 
@@ -116,7 +116,7 @@ describe('PromptelParser', () => {
       }
     `;
     const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('BodySection');
+    expect(ast.prompts[0].sections[0].type).toBe('body');
     expect(ast.prompts[0].sections[0].content.length).toBe(3);
   });
 
@@ -130,7 +130,7 @@ describe('PromptelParser', () => {
       }
     `;
     const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('BodySection');
+    expect(ast.prompts[0].sections[0].type).toBe('body');
     expect(ast.prompts[0].sections[0].content.length).toBe(2);
   });
 
@@ -197,7 +197,7 @@ describe('PromptelParser', () => {
       }
     `;
     const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('TechniqueSection');
+    expect(ast.prompts[0].sections[0].type).toBe('technique');
   });
 
   test('should parse different literal types correctly', () => {
@@ -212,7 +212,7 @@ describe('PromptelParser', () => {
       }
     `;
     const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('BodySection');
+    expect(ast.prompts[0].sections[0].type).toBe('body');
     expect(ast.prompts[0].sections[0].content.length).toBe(4);
   });
 

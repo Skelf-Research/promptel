@@ -4,6 +4,6 @@ module.exports = {
     '^.+\\.js$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!chevrotain).+\\.js$',
+    '/node_modules/(?!(chevrotain|harmony-protocol-js)).+\\.js$',
   ],
 };

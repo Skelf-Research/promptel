@@ -1,0 +1,19 @@
+name: SimpleHarmony
+
+meta:
+  name: "Simple Harmony Test"
+  version: "1.0"
+
+harmony:
+  reasoning: "high"
+  channels:
+    - "final"
+    - "analysis"
+
+params:
+  question:
+    type: string
+    required: true
+
+body:
+  text: "Please answer this question: ${params.question}"

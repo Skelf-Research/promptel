@@ -32,6 +32,21 @@
 - [ ] Implement import/require system for reusing prompts
 - [ ] Add support for annotations in text blocks
 
+### Expression Evaluator Enhancement
+- [ ] Implement arithmetic operations (+, -, *, /, %)
+- [ ] Implement comparison operations (==, !=, <, >, <=, >=)
+- [ ] Implement logical operations (&&, ||, !)
+- [ ] Implement function calls (Math.round(), String.toUpperCase(), etc.)
+- [ ] Implement object property access (obj.property, obj['property'])
+- [ ] Implement array indexing (arr[0], arr.length)
+- [ ] Implement ternary operator (condition ? value1 : value2)
+
+### Control Structure Implementation
+- [ ] Complete if/else statement execution with proper condition evaluation
+- [ ] Complete for loop execution with iteration support
+- [ ] Implement while loops
+- [ ] Implement break/continue statements
+
 ### Executor Improvements
 - [ ] Complete implementation of all technique handlers (currently mostly placeholders)
 - [ ] Implement proper hook execution (preProcess/postProcess)
@@ -42,7 +57,7 @@
 ### CLI Enhancements
 - [ ] Add interactive mode for testing prompts
 - [ ] Implement prompt validation without execution
-- [ ] Add syntax highlighting for .nudge files
+- [ ] Add syntax highlighting for .prompt files
 - [ ] Implement a server mode for web API access
 
 ## Medium-term Goals

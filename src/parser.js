@@ -1,57 +1,66 @@
 // parser.js
-const { createToken, Lexer, CstParser } = require("chevrotain");
+const { createToken, Lexer, CstParser } = require('chevrotain');
 
 // Define tokens
-const Prompt = createToken({ name: "Prompt", pattern: /prompt/ });
-const Meta = createToken({ name: "Meta", pattern: /meta/ });
-const Body = createToken({ name: "Body", pattern: /body/ });
-const Technique = createToken({ name: "Technique", pattern: /technique/ });
-const Constraints = createToken({ name: "Constraints", pattern: /constraints/ });
-const Output = createToken({ name: "Output", pattern: /output/ });
-const Hooks = createToken({ name: "Hooks", pattern: /hooks/ });
-const Identifier = createToken({ name: "Identifier", pattern: /[a-zA-Z]\w*/ });
-const LCurly = createToken({ name: "LCurly", pattern: /{/ });
-const RCurly = createToken({ name: "RCurly", pattern: /}/ });
-const Colon = createToken({ name: "Colon", pattern: /:/ });
-const Semicolon = createToken({ name: "Semicolon", pattern: /;/ });
-const Text = createToken({ name: "Text", pattern: /text/ });
-const BacktickString = createToken({ name: "BacktickString", pattern: /`[^`]*`/ });
-const StringLiteral = createToken({ name: "StringLiteral", pattern: /"(?:[^"\\]|\\.)*"/ });
-const NumberLiteral = createToken({ name: "NumberLiteral", pattern: /-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/ });
-const BooleanLiteral = createToken({ name: "BooleanLiteral", pattern: /true|false/ });
+const Prompt = createToken({ name: 'Prompt', pattern: /prompt/ });
+const Meta = createToken({ name: 'Meta', pattern: /meta/ });
+const Body = createToken({ name: 'Body', pattern: /body/ });
+const Technique = createToken({ name: 'Technique', pattern: /technique/ });
+const Constraints = createToken({ name: 'Constraints', pattern: /constraints/ });
+const Output = createToken({ name: 'Output', pattern: /output/ });
+const Hooks = createToken({ name: 'Hooks', pattern: /hooks/ });
+const Identifier = createToken({ name: 'Identifier', pattern: /[a-zA-Z]\w*/ });
+const LCurly = createToken({ name: 'LCurly', pattern: /{/ });
+const RCurly = createToken({ name: 'RCurly', pattern: /}/ });
+const Colon = createToken({ name: 'Colon', pattern: /:/ });
+const Semicolon = createToken({ name: 'Semicolon', pattern: /;/ });
+const Text = createToken({ name: 'Text', pattern: /text/ });
+const BacktickString = createToken({ name: 'BacktickString', pattern: /`[^`]*`/ });
+const StringLiteral = createToken({ name: 'StringLiteral', pattern: /"(?:[^"\\]|\\.)*"/ });
+const NumberLiteral = createToken({ name: 'NumberLiteral', pattern: /-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/ });
+const BooleanLiteral = createToken({ name: 'BooleanLiteral', pattern: /true|false/ });
 const WhiteSpace = createToken({
-    name: "WhiteSpace",
+    name: 'WhiteSpace',
     pattern: /\s+/,
     group: Lexer.SKIPPED
 });
 
 // Add these to your token definitions
-const Equals = createToken({ name: "Equals", pattern: /=/ });
+const Equals = createToken({ name: 'Equals', pattern: /=/ });
 
-const If = createToken({ name: "If", pattern: /\bif\b/ });
-const Else = createToken({ name: "Else", pattern: /\belse\b/ });
-const For = createToken({ name: "For", pattern: /\bfor\b/ });
-const Of = createToken({ name: "Of", pattern: /\bof\b/ });
-const Step = createToken({ name: "Step", pattern: /\bstep\b/ });
-const LParen = createToken({ name: "LParen", pattern: /\(/ });
-const RParen = createToken({ name: "RParen", pattern: /\)/ });
-const LBracket = createToken({ name: "LBracket", pattern: /\[/ });
-const RBracket = createToken({ name: "RBracket", pattern: /\]/ });
-const Comma = createToken({ name: "Comma", pattern: /,/ });
-const AnyToken = createToken({ name: "AnyToken", pattern: /[^}]+/ });
-const QuestionMark = createToken({ name: "QuestionMark", pattern: /\?/ });
-const Dot = createToken({ name: "Dot", pattern: /\./ });
-const Dot2 = createToken({ name: "Dot2", pattern: /\\./ });
+const If = createToken({ name: 'If', pattern: /\bif\b/ });
+const Else = createToken({ name: 'Else', pattern: /\belse\b/ });
+const For = createToken({ name: 'For', pattern: /\bfor\b/ });
+const Of = createToken({ name: 'Of', pattern: /\bof\b/ });
+const Step = createToken({ name: 'Step', pattern: /\bstep\b/ });
+const LParen = createToken({ name: 'LParen', pattern: /\(/ });
+const RParen = createToken({ name: 'RParen', pattern: /\)/ });
+const LBracket = createToken({ name: 'LBracket', pattern: /\[/ });
+const RBracket = createToken({ name: 'RBracket', pattern: /\]/ });
+const Comma = createToken({ name: 'Comma', pattern: /,/ });
+const AnyToken = createToken({ name: 'AnyToken', pattern: /[^}]+/ });
+const QuestionMark = createToken({ name: 'QuestionMark', pattern: /\?/ });
+const Dot = createToken({ name: 'Dot', pattern: /\./ });
 
-const Context = createToken({ name: "Context", pattern: /context/ });
+const Context = createToken({ name: 'Context', pattern: /context/ });
 
-const Arrow = createToken({ name: "Arrow", pattern: /=>/ });
-const Return = createToken({ name: "Return", pattern: /\breturn\b/ });
+// Harmony-specific tokens
+const Format = createToken({ name: 'Format', pattern: /format/ });
+const Harmony = createToken({ name: 'Harmony', pattern: /harmony/ });
+const Channels = createToken({ name: 'Channels', pattern: /channels/ });
+const Reasoning = createToken({ name: 'Reasoning', pattern: /reasoning/ });
+const Channel = createToken({ name: 'Channel', pattern: /channel/ });
+const Encoding = createToken({ name: 'Encoding', pattern: /encoding/ });
+
+const Arrow = createToken({ name: 'Arrow', pattern: /=>/ });
+const Return = createToken({ name: 'Return', pattern: /\breturn\b/ });
 
 const allTokens = [
     WhiteSpace,
     // Tokens that don't conflict with Arrow
     Prompt, Meta, Context, Body, Technique, Constraints, Output, Hooks,
+    // Harmony-specific tokens
+    Format, Harmony, Channels, Reasoning, Channel, Encoding,
     LParen, RParen, LBracket, RBracket, LCurly, RCurly,
     // Control flow keywords
     If, Else, For, Of, Step, Return,
@@ -77,13 +86,13 @@ class NudgeParser extends CstParser {
 
         const $ = this;
 
-        $.RULE("program", () => {
+        $.RULE('program', () => {
             $.MANY(() => {
                 $.SUBRULE($.prompt);
             });
         });
 
-        $.RULE("prompt", () => {
+        $.RULE('prompt', () => {
             $.CONSUME(Prompt);
             $.CONSUME(Identifier);
             $.CONSUME(LCurly);
@@ -93,7 +102,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("section", () => {
+        $.RULE('section', () => {
             $.OR([
                 { ALT: () => $.SUBRULE($.metaSection) },
                 { ALT: () => $.SUBRULE($.contextSection) },
@@ -102,11 +111,12 @@ class NudgeParser extends CstParser {
                 { ALT: () => $.SUBRULE($.constraintsSection) },
                 { ALT: () => $.SUBRULE($.outputSection) },
                 { ALT: () => $.SUBRULE($.hooksSection) },
-                { ALT: () => $.SUBRULE($.techniqueSection) }
+                { ALT: () => $.SUBRULE($.techniqueSection) },
+                { ALT: () => $.SUBRULE($.harmonySection) }
             ]);
         });
 
-        $.RULE("metaSection", () => {
+        $.RULE('metaSection', () => {
             $.CONSUME(Meta);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -115,7 +125,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("contextSection", () => {
+        $.RULE('contextSection', () => {
             $.CONSUME(Context);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -124,8 +134,8 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("paramsSection", () => {
-            const sectionName = $.CONSUME(Identifier);
+        $.RULE('paramsSection', () => {
+            $.CONSUME(Identifier);
             // In the future, we should validate that sectionName.image === "params"
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -134,7 +144,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("bodySection", () => {
+        $.RULE('bodySection', () => {
             $.CONSUME(Body);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -147,7 +157,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("techniqueSection", () => {
+        $.RULE('techniqueSection', () => {
             $.CONSUME(Technique);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -156,7 +166,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("constraintsSection", () => {
+        $.RULE('constraintsSection', () => {
             $.CONSUME(Constraints);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -165,16 +175,37 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("outputSection", () => {
+        $.RULE('outputSection', () => {
             $.CONSUME(Output);
             $.CONSUME(LCurly);
             $.MANY(() => {
-                $.SUBRULE($.field);
+                $.OR([
+                    { ALT: () => $.SUBRULE($.field) },
+                    { ALT: () => $.SUBRULE($.channelsBlock) }
+                ]);
             });
             $.CONSUME(RCurly);
         });
 
-        $.RULE("hooksSection", () => {
+        $.RULE('channelsBlock', () => {
+            $.CONSUME(Channels);
+            $.CONSUME(LCurly);
+            $.MANY(() => {
+                $.SUBRULE($.channelDef);
+            });
+            $.CONSUME(RCurly);
+        });
+
+        $.RULE('channelDef', () => {
+            $.CONSUME(Identifier); // Channel name (final, analysis, commentary)
+            $.CONSUME(Colon);
+            $.SUBRULE($.value);
+            $.OPTION(() => {
+                $.CONSUME(Semicolon);
+            });
+        });
+
+        $.RULE('hooksSection', () => {
             $.CONSUME(Hooks);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -183,11 +214,21 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("field", () => {
+        $.RULE('harmonySection', () => {
+            $.CONSUME(Harmony);
+            $.CONSUME(LCurly);
+            $.MANY(() => {
+                $.SUBRULE($.harmonyField);
+            });
+            $.CONSUME(RCurly);
+        });
+
+        $.RULE('harmonyField', () => {
             $.OR([
-                { ALT: () => $.CONSUME(Identifier) },
-                { ALT: () => $.CONSUME(Output) },    // Allow "output" as field name
-                { ALT: () => $.CONSUME(Prompt) }     // Allow "prompt" as field name
+                { ALT: () => $.CONSUME(Encoding) },
+                { ALT: () => $.CONSUME(Reasoning) },
+                { ALT: () => $.CONSUME(Channels) },
+                { ALT: () => $.CONSUME(Identifier) }
             ]);
             $.CONSUME(Colon);
             $.SUBRULE($.value);
@@ -196,7 +237,23 @@ class NudgeParser extends CstParser {
             });
         });
 
-        $.RULE("type", () => {
+        $.RULE('field', () => {
+            $.OR([
+                { ALT: () => $.CONSUME(Identifier) },
+                { ALT: () => $.CONSUME(Output) },    // Allow "output" as field name
+                { ALT: () => $.CONSUME(Prompt) },    // Allow "prompt" as field name
+                { ALT: () => $.CONSUME(Format) },    // Allow "format" as field name
+                { ALT: () => $.CONSUME(Reasoning) }, // Allow "reasoning" as field name
+                { ALT: () => $.CONSUME(Channels) }   // Allow "channels" as field name
+            ]);
+            $.CONSUME(Colon);
+            $.SUBRULE($.value);
+            $.OPTION(() => {
+                $.CONSUME(Semicolon);
+            });
+        });
+
+        $.RULE('type', () => {
             $.CONSUME(Identifier); // Base type
             $.OPTION(() => {
                 $.CONSUME(LBracket);
@@ -204,19 +261,19 @@ class NudgeParser extends CstParser {
             });
         });
 
-        $.RULE("paramField", () => {
+        $.RULE('paramField', () => {
             // Parameter name
-            const name = $.CONSUME(Identifier);
+            $.CONSUME(Identifier);
             
             // Handle optional parameter marker
-            const isOptional = $.OPTION(() => $.CONSUME(QuestionMark));
+            $.OPTION(() => $.CONSUME(QuestionMark));
             
             // Colon and type
             $.CONSUME(Colon);
             $.SUBRULE($.type); // Type annotation
             
             // Optional default value
-            const defaultValue = $.OPTION2(() => {
+            $.OPTION2(() => {
                 $.CONSUME(Equals);
                 return $.SUBRULE($.value);
             });
@@ -225,7 +282,7 @@ class NudgeParser extends CstParser {
             $.OPTION3(() => $.CONSUME(Semicolon));
         });
 
-        $.RULE("value", () => {
+        $.RULE('value', () => {
             $.OR([
                 { ALT: () => $.CONSUME(StringLiteral) },
                 { ALT: () => $.CONSUME(NumberLiteral) },
@@ -237,12 +294,12 @@ class NudgeParser extends CstParser {
             ]);
         });
 
-        $.RULE("textBlock", () => {
+        $.RULE('textBlock', () => {
             $.CONSUME(Text);
             $.CONSUME(BacktickString);
         });
 
-        $.RULE("objectLiteral", () => {
+        $.RULE('objectLiteral', () => {
             $.CONSUME(LCurly);
             $.MANY_SEP({
                 SEP: Comma,
@@ -255,7 +312,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("arrayLiteral", () => {
+        $.RULE('arrayLiteral', () => {
             $.CONSUME(LBracket);
             $.MANY_SEP({
                 SEP: Comma,
@@ -266,7 +323,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RBracket);
         });
 
-        $.RULE("ifStatement", () => {
+        $.RULE('ifStatement', () => {
             $.CONSUME(If);
             $.CONSUME(LParen);
             $.SUBRULE($.expression);
@@ -286,7 +343,7 @@ class NudgeParser extends CstParser {
             });
         });
 
-        $.RULE("forLoop", () => {
+        $.RULE('forLoop', () => {
             $.CONSUME(For);
             $.CONSUME(LParen);
             $.CONSUME(Identifier);
@@ -300,7 +357,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("expression", () => {
+        $.RULE('expression', () => {
             // Parse primary expressions
             let left = $.OR([
                 { ALT: () => $.CONSUME(Identifier) },
@@ -336,7 +393,7 @@ class NudgeParser extends CstParser {
             return left;
         });
 
-        $.RULE("techniqueDef", () => {
+        $.RULE('techniqueDef', () => {
             $.CONSUME(Identifier);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -349,7 +406,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("techniqueBlock", () => {
+        $.RULE('techniqueBlock', () => {
             $.CONSUME(Identifier);
             $.CONSUME(LCurly);
             $.MANY(() => {
@@ -361,7 +418,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("stepDef", () => {
+        $.RULE('stepDef', () => {
             $.CONSUME(Step);
             $.OPTION(() => {
                 $.CONSUME(LParen);
@@ -378,7 +435,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("hookDef", () => {
+        $.RULE('hookDef', () => {
             $.CONSUME(Identifier);
             $.OPTION(() => {
                 $.CONSUME(LParen);
@@ -393,7 +450,7 @@ class NudgeParser extends CstParser {
             $.CONSUME(RCurly);
         });
 
-        $.RULE("statement", () => {
+        $.RULE('statement', () => {
             $.OR([
                 { ALT: () => $.SUBRULE($.expression) },
                 { ALT: () => $.SUBRULE($.ifStatement) },
@@ -403,7 +460,7 @@ class NudgeParser extends CstParser {
             $.OPTION(() => $.CONSUME(Semicolon));
         });
 
-        $.RULE("returnStatement", () => {
+        $.RULE('returnStatement', () => {
             $.CONSUME(Return);
             $.SUBRULE($.expression);
         });
@@ -421,7 +478,7 @@ class NudgeLangParser {
         const cst = parser.program();
 
         if (parser.errors.length > 0) {
-            throw new Error("Parsing errors detected: " + parser.errors.map(err => err.message).join(", "));
+            throw new Error('Parsing errors detected: ' + parser.errors.map(err => err.message).join(', '));
         }
 
         // Convert CST to AST (you'll need to implement this conversion)
@@ -441,134 +498,144 @@ class NudgeLangParser {
                 const sectionType = Object.keys(sectionCst.children)[0];
                 
                 switch (sectionType) {
-                    case 'bodySection':
-                        const bodySectionCst = sectionCst.children.bodySection[0];
+                case 'bodySection': {
+                    const bodySectionCst = sectionCst.children.bodySection[0];
+
+                    const content = [];
                         
-                        const content = [];
-                        
-                        // Handle text blocks
-                        if (bodySectionCst.children && bodySectionCst.children.textBlock) {
-                            bodySectionCst.children.textBlock.forEach(textBlockCst => {
-                                content.push({
-                                    type: 'TextBlock',
-                                    content: textBlockCst.children.BacktickString[0].image,
-                                });
+                    // Handle text blocks
+                    if (bodySectionCst.children && bodySectionCst.children.textBlock) {
+                        bodySectionCst.children.textBlock.forEach(textBlockCst => {
+                            content.push({
+                                type: 'TextBlock',
+                                content: textBlockCst.children.BacktickString[0].image,
                             });
-                        }
+                        });
+                    }
                         
-                        // Handle if statements
-                        if (bodySectionCst.children && bodySectionCst.children.ifStatement) {
-                            bodySectionCst.children.ifStatement.forEach(ifStatementCst => {
-                                content.push({
-                                    type: 'IfStatement',
-                                    // For now, just mark that we have an if statement
-                                    // We'll implement full parsing later
-                                });
+                    // Handle if statements
+                    if (bodySectionCst.children && bodySectionCst.children.ifStatement) {
+                        bodySectionCst.children.ifStatement.forEach(_ifStatementCst => {
+                            content.push({
+                                type: 'IfStatement',
+                                // For now, just mark that we have an if statement
+                                // We'll implement full parsing later
                             });
-                        }
+                        });
+                    }
                         
-                        // Handle for loops
-                        if (bodySectionCst.children && bodySectionCst.children.forLoop) {
-                            bodySectionCst.children.forLoop.forEach(forLoopCst => {
-                                content.push({
-                                    type: 'ForLoop',
-                                    // For now, just mark that we have a for loop
-                                    // We'll implement full parsing later
-                                });
+                    // Handle for loops
+                    if (bodySectionCst.children && bodySectionCst.children.forLoop) {
+                        bodySectionCst.children.forLoop.forEach(_forLoopCst => {
+                            content.push({
+                                type: 'ForLoop',
+                                // For now, just mark that we have a for loop
+                                // We'll implement full parsing later
                             });
-                        }
+                        });
+                    }
                         
-                        return {
-                            type: 'body',  // Changed from 'BodySection' to 'body'
-                            content,
-                        };
+                    return {
+                        type: 'body',  // Changed from 'BodySection' to 'body'
+                        content,
+                    };
+                }
+                case 'metaSection': {
+                    return {
+                        type: 'meta',  // Changed from 'MetaSection' to 'meta'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
+                }
                     
-                    case 'metaSection':
-                        return {
-                            type: 'meta',  // Changed from 'MetaSection' to 'meta'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
-                    
-                    case 'paramsSection':
-                        const paramsSectionCst = sectionCst.children.paramsSection[0];
+                case 'paramsSection': {
+                    const paramsSectionCst = sectionCst.children.paramsSection[0];
+
+                    const fields = [];
                         
-                        const fields = [];
-                        
-                        // Handle param fields
-                        if (paramsSectionCst.children && paramsSectionCst.children.paramField) {
-                            paramsSectionCst.children.paramField.forEach(paramFieldCst => {
-                                const field = {
-                                    type: 'ParamField',
-                                    name: paramFieldCst.children.Identifier[0].image,
-                                    isOptional: !!paramFieldCst.children.QuestionMark,
-                                };
+                    // Handle param fields
+                    if (paramsSectionCst.children && paramsSectionCst.children.paramField) {
+                        paramsSectionCst.children.paramField.forEach(paramFieldCst => {
+                            const field = {
+                                type: 'ParamField',
+                                name: paramFieldCst.children.Identifier[0].image,
+                                isOptional: !!paramFieldCst.children.QuestionMark,
+                            };
                                 
-                                // Handle default value if present
-                                if (paramFieldCst.children.Equals) {
-                                    // Try to extract the default value
-                                    const valueCst = paramFieldCst.children.value ? paramFieldCst.children.value[0] : null;
-                                    if (valueCst) {
-                                        // This is a simplified implementation
-                                        // We could implement proper value extraction here
-                                        if (valueCst.children.StringLiteral) {
-                                            field.defaultValue = valueCst.children.StringLiteral[0].image;
-                                        } else if (valueCst.children.NumberLiteral) {
-                                            field.defaultValue = parseFloat(valueCst.children.NumberLiteral[0].image);
-                                        } else if (valueCst.children.BooleanLiteral) {
-                                            field.defaultValue = valueCst.children.BooleanLiteral[0].image === 'true';
-                                        } else {
-                                            field.defaultValue = valueCst.children.Identifier ? 
-                                                valueCst.children.Identifier[0].image : 
-                                                null;
-                                        }
+                            // Handle default value if present
+                            if (paramFieldCst.children.Equals) {
+                                // Try to extract the default value
+                                const valueCst = paramFieldCst.children.value ? paramFieldCst.children.value[0] : null;
+                                if (valueCst) {
+                                    // This is a simplified implementation
+                                    // We could implement proper value extraction here
+                                    if (valueCst.children.StringLiteral) {
+                                        field.defaultValue = valueCst.children.StringLiteral[0].image;
+                                    } else if (valueCst.children.NumberLiteral) {
+                                        field.defaultValue = parseFloat(valueCst.children.NumberLiteral[0].image);
+                                    } else if (valueCst.children.BooleanLiteral) {
+                                        field.defaultValue = valueCst.children.BooleanLiteral[0].image === 'true';
+                                    } else {
+                                        field.defaultValue = valueCst.children.Identifier ? 
+                                            valueCst.children.Identifier[0].image : 
+                                            null;
                                     }
                                 }
+                            }
                                 
-                                fields.push(field);
-                            });
-                        }
+                            fields.push(field);
+                        });
+                    }
                         
-                        return {
-                            type: 'params',
-                            fields,
-                        };
-                    
-                    case 'constraintsSection':
-                        return {
-                            type: 'constraints',  // Changed from 'ConstraintsSection' to 'constraints'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
+                    return {
+                        type: 'params',
+                        fields,
+                    };
+                }
+                case 'constraintsSection':
+                    return {
+                        type: 'constraints',  // Changed from 'ConstraintsSection' to 'constraints'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
                         
-                    case 'outputSection':
-                        return {
-                            type: 'output',  // Changed from 'OutputSection' to 'output'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
+                case 'outputSection':
+                    return {
+                        type: 'output',  // Changed from 'OutputSection' to 'output'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
                         
-                    case 'hooksSection':
-                        return {
-                            type: 'hooks',  // Changed from 'HooksSection' to 'hooks'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
+                case 'hooksSection':
+                    return {
+                        type: 'hooks',  // Changed from 'HooksSection' to 'hooks'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
                         
-                    case 'techniqueSection':
-                        return {
-                            type: 'technique',  // Changed from 'TechniqueSection' to 'technique'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
+                case 'techniqueSection':
+                    return {
+                        type: 'technique',  // Changed from 'TechniqueSection' to 'technique'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
                         
-                    case 'contextSection':
-                        return {
-                            type: 'context',  // Changed from 'ContextSection' to 'context'
-                            // For now, just return the type. We'll implement full parsing later
-                        };
-                        
-                    default:
-                        // Handle other section types similarly
-                        return {
-                            type: sectionType,
-                            // Add more properties based on the section type
-                        };
+                case 'contextSection':
+                    return {
+                        type: 'context',  // Changed from 'ContextSection' to 'context'
+                        // For now, just return the type. We'll implement full parsing later
+                    };
+
+                case 'harmonySection':
+                    return {
+                        type: 'harmony',
+                        fields: sectionCst.children.harmonyField?.map(fieldCst => ({
+                            name: this.extractHarmonyFieldName(fieldCst),
+                            value: this.extractHarmonyFieldValue(fieldCst)
+                        })) || []
+                    };
+
+                default:
+                    // Handle other section types similarly
+                    return {
+                        type: sectionType,
+                        // Add more properties based on the section type
+                    };
                 }
             }) : [];
             
@@ -583,6 +650,48 @@ class NudgeLangParser {
             type: 'Program',
             prompts,
         };
+    }
+
+    extractHarmonyFieldName(fieldCst) {
+        if (fieldCst.children.Identifier) {
+            return fieldCst.children.Identifier[0].image;
+        } else if (fieldCst.children.Encoding) {
+            return 'encoding';
+        } else if (fieldCst.children.Reasoning) {
+            return 'reasoning';
+        } else if (fieldCst.children.Channels) {
+            return 'channels';
+        }
+        return 'unknown';
+    }
+
+    extractHarmonyFieldValue(fieldCst) {
+        if (fieldCst.children.value && fieldCst.children.value[0]) {
+            const valueCst = fieldCst.children.value[0];
+            if (valueCst.children.StringLiteral) {
+                return valueCst.children.StringLiteral[0].image.slice(1, -1); // Remove quotes
+            } else if (valueCst.children.Identifier) {
+                return valueCst.children.Identifier[0].image;
+            } else if (valueCst.children.arrayLiteral) {
+                // Handle array literals for channels
+                return this.extractArrayValue(valueCst.children.arrayLiteral[0]);
+            }
+        }
+        return null;
+    }
+
+    extractArrayValue(arrayLiteralCst) {
+        const elements = [];
+        if (arrayLiteralCst.children.value) {
+            arrayLiteralCst.children.value.forEach(valueCst => {
+                if (valueCst.children.StringLiteral) {
+                    elements.push(valueCst.children.StringLiteral[0].image.slice(1, -1));
+                } else if (valueCst.children.Identifier) {
+                    elements.push(valueCst.children.Identifier[0].image);
+                }
+            });
+        }
+        return elements;
     }
 }
 

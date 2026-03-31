@@ -4,7 +4,7 @@ const PromptelExecutor = require('./executor');
 const { createProvider } = require('./provider');
 
 module.exports = {
-  PromptelParser,
-  PromptelExecutor,
-  createProvider,
+    PromptelParser,
+    PromptelExecutor,
+    createProvider,
 };

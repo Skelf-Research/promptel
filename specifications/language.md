@@ -266,7 +266,7 @@ NudgeLang supports various advanced prompting techniques. See the ADVANCED_TECHN
 You can import and reuse prompts to create more complex workflows:
 
 ```nudgelang
-import { MathSolver } from "math_prompts.nudge";
+import { MathSolver } from "math_prompts.prompt";
 
 prompt ComplexProblemSolver {
   // ...

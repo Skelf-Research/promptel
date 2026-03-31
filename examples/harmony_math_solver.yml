@@ -1,0 +1,105 @@
+name: HarmonyMathSolver
+
+meta:
+  name: "Advanced Math Problem Solver"
+  version: "2.0"
+  description: "A sophisticated math solver using Harmony protocol for structured reasoning."
+
+harmony:
+  reasoning: "high"
+  channels:
+    - "final"
+    - "analysis"
+    - "commentary"
+  encoding: "harmony_gpt_oss"
+
+params:
+  problem:
+    type: string
+    required: true
+  difficulty:
+    type: string
+    default: "medium"
+    required: false
+  show_work:
+    type: boolean
+    default: true
+    required: false
+
+body:
+  text: |
+    Solve this ${params.difficulty} level mathematical problem step by step:
+
+    ${params.problem}
+
+    ${params.show_work ? 'Please show detailed work and reasoning.' : 'Provide the solution.'}
+
+  technique:
+    chainOfThought:
+      reasoning: "high"
+      channels:
+        analysis: "detailed step-by-step mathematical reasoning"
+        commentary: "verification and alternative solution methods"
+        final: "clean solution with final answer"
+
+      steps:
+        - name: "Problem Analysis"
+          channel: "analysis"
+          text: "Analyze the mathematical problem and identify the key components, variables, and required solution approach."
+
+        - name: "Solution Strategy"
+          channel: "analysis"
+          text: "Determine the most appropriate mathematical methods and formulas to solve this problem."
+
+        - name: "Step-by-Step Solution"
+          channel: "analysis"
+          text: "Execute the solution plan with detailed calculations and explanations."
+
+        - name: "Verification"
+          channel: "commentary"
+          text: "Verify the solution using alternative methods or by checking the answer."
+
+constraints:
+  maxTokens: 1000
+  temperature: 0.1
+
+output:
+  channels:
+    final:
+      format: "structured"
+      schema:
+        answer: "number | string"
+        explanation: "string"
+        confidence: "number"
+    analysis:
+      format: "text"
+      description: "Complete mathematical reasoning process"
+    commentary:
+      format: "structured"
+      schema:
+        verification_method: "string"
+        alternative_approaches: "string[]"
+        confidence_notes: "string"
+
+hooks:
+  preProcess: |
+    // Normalize difficulty level
+    if (input.difficulty) {
+      input.difficulty = input.difficulty.toLowerCase();
+    }
+    return input;
+
+  postProcess: |
+    // Add timestamp and format enhancements
+    if (output.channels) {
+      return {
+        ...output,
+        metadata: {
+          ...output.metadata,
+          processed_at: new Date().toISOString(),
+          format: "harmony",
+          channels_available: Object.keys(output.channels)
+        }
+      };
+    }
+    return output;

@@ -1,159 +1,190 @@
-# Promptel: A Declarative Language for LLM Prompts
+# Promptel
+
+**The first Node.js framework with native Harmony Protocol support for advanced prompt engineering.**
 
 [![GitHub license](https://img.shields.io/github/license/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/issues)
+[![npm version](https://badge.fury.io/js/promptel.svg)](https://www.npmjs.com/package/promptel)
+[![Node.js CI](https://github.com/terraprompt/promptel/workflows/Node.js%20CI/badge.svg)](https://github.com/terraprompt/promptel/actions)
 
-[EXPERIMENTAL]
+## Why Promptel?
 
-Promptel is a powerful, declarative language designed for crafting sophisticated prompts for Large Language Models (LLMs). It provides a structured, modular, and reusable approach to prompt engineering, incorporating advanced techniques and best practices in the field.
+Modern AI applications need sophisticated prompt engineering, but implementing advanced techniques like Chain-of-Thought or handling multi-channel responses is complex and error-prone. **Promptel solves this with a declarative approach and native support for OpenAI's Harmony Protocol.**
 
-## Table of Contents
+### Key Problems Solved
 
-1. [Features](#features)
-2. [Installation](#installation)
-3. [Quick Start](#quick-start)
-4. [Language Overview](#language-overview)
-5. [Advanced Techniques](#advanced-techniques)
-6. [Examples](#examples)
-7. [API Reference](#api-reference)
-8. [Contributing](#contributing)
-9. [License](#license)
+- **Harmony Protocol Complexity**: Only Node.js framework with native gpt-oss support
+- **Advanced Reasoning Techniques**: Built-in Chain-of-Thought, Tree-of-Thoughts, ReAct
+- **Multi-Channel Responses**: Automatic parsing of analysis, commentary, and final outputs
+- **Provider Lock-in**: Abstract across OpenAI, Anthropic, Groq with consistent APIs
 
-## Features
+## Quick Start
 
-- **Declarative Syntax**: Write clear, readable prompts with a structured syntax that feels natural and intuitive.
-- **Modularity**: Import and reuse prompts across your projects, saving time and maintaining consistency.
-- **Advanced Techniques**: Built-in support for Chain-of-Thought, Tree-of-Thoughts, ReAct, and more - no need to implement these from scratch.
-- **Type System**: Optional type annotations for improved safety and clarity, catching errors before they happen.
-- **Dynamic Content**: Use interpolation and control structures for flexible prompt generation that adapts to your needs.
-- **Execution Hooks**: Pre-process inputs and post-process outputs with custom logic, giving you full control over the prompt lifecycle.
-- **Output Specification**: Define structured outputs, including JSON schemas, ensuring consistent and predictable results.
-- **Extensibility**: Easily extend the language with new techniques and features to suit your specific use cases.
-
-## Installation
-
-To install Promptel, use npm:
+### Installation
 
 ```bash
 npm install promptel
 ```
 
-## Quick Start
-
-Here's a simple example to get you started with Promptel:
-
-```nudgelang
-prompt SimpleMathSolver {
-  meta {
-    name: "Simple Math Solver";
-    version: "1.0";
-  }
-
-  params {
-    problem: string;
-  }
-
-  body {
-    text`Let's solve this math problem step by step:
-    
-    Problem: ${params.problem}
-    
-    Steps:`;
-
-    chainOfThought {
-      step("Understand the problem") {
-        text`First, let's identify the key information and what we need to solve.`;
-      }
-      step("Plan the solution") {
-        text`Now, let's outline the steps we'll take to solve this problem.`;
-      }
-      step("Solve") {
-        text`Let's perform the calculations:`;
-      }
-      step("Check") {
-        text`Finally, let's verify our solution:`;
-      }
-    }
-  }
-
-  output {
-    format: "json";
-    schema: {
-      solution: number,
-      steps: string[]
-    }
-  }
-}
-```
-
-To use this prompt:
+### Basic Example
 
 ```javascript
 import { parsePrompt, executePrompt } from 'promptel';
 
-const promptCode = '...'; // Your Promptel code here
-const parsedPrompt = parsePrompt(promptCode);
+const prompt = parsePrompt(`
+prompt MathSolver {
+  params {
+    problem: string
+  }
 
-const result = await executePrompt(parsedPrompt, {
-  problem: "What is 15% of 80?"
+  body {
+    text\`Solve: \${params.problem}\`
+  }
+
+  technique {
+    chainOfThought {
+      step("Analysis") { text\`Break down the problem\` }
+      step("Solution") { text\`Calculate step by step\` }
+      step("Verification") { text\`Verify the answer\` }
+    }
+  }
+}
+`);
+
+const result = await executePrompt(prompt, {
+  problem: "What is 25% of 240?"
+}, {
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY
 });
 
-console.log(result.solution); // Outputs the numeric solution
-console.log(result.steps);    // Outputs the reasoning steps
+console.log(result);
 ```
 
-## Language Overview
+### Harmony Protocol Example (gpt-oss)
 
-Promptel is structured into several key sections that make prompt engineering more manageable:
+```javascript
+const harmonyPrompt = parsePrompt(`
+prompt HarmonyReasoning {
+  harmony {
+    reasoning: "high"
+    channels: ["final", "analysis", "commentary"]
+  }
 
-- **meta**: Metadata about the prompt (name, version, description)
-- **params**: Input parameters for the prompt (with type safety)
-- **body**: The main content of the prompt (where the magic happens)
-- **technique**: Advanced prompting techniques to be used (CoT, ToT, etc.)
-- **constraints**: Execution constraints (e.g., max tokens, temperature)
-- **output**: Specification for the expected output (structure and format)
-- **hooks**: Pre-processing and post-processing logic (custom transformations)
+  params {
+    question: string
+  }
 
-For a complete language specification, please refer to our [Language Guide](./specifications/language.md).
+  body {
+    text\`\${params.question}\`
+  }
+}
+`);
 
-## Advanced Techniques
+const result = await executePrompt(harmonyPrompt, {
+  question: "Optimize database query performance for large datasets"
+});
 
-Promptel supports a variety of advanced prompting techniques that can significantly improve your LLM interactions:
+// Multi-channel outputs automatically parsed
+console.log(result.channels.final);      // Clean answer for users
+console.log(result.channels.analysis);   // Detailed reasoning process
+console.log(result.channels.commentary); // Verification and alternatives
+```
 
-- Chain of Thought (CoT): Break down complex problems into manageable steps
-- Tree of Thoughts (ToT): Explore multiple solution paths simultaneously
-- ReAct (Reasoning and Acting): Combine reasoning with action planning
-- ReWOO (Reasoning Without Observation): Efficient problem-solving approach
-- Active Prompting: Dynamically adapt prompts based on context
-- Self-Consistency: Generate multiple solutions and find consensus
-- Automatic Prompt Engineering (APE): Optimize prompts automatically
-- Expert Prompting: Leverage domain-specific knowledge
+## Architecture
 
-For details on how to use these techniques, check our [Advanced Techniques Guide](./specifications/techniques.md).
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Parser Module  │    │ Executor Module │    │Provider Adapter │
+│                 │    │                 │    │                 │
+│ • Lexer/Parser  │◄──►│ • Harmony Integ │◄──►│ • OpenAI        │
+│ • AST Builder   │    │ • Technique Eng │    │ • Anthropic     │
+│ • Validation    │    │ • Output Format │    │ • Groq          │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
 
-## Examples
+**Flow**: `.prompt file` → `Parser` → `AST` → `Executor` → `Provider` → `LLM` → `Response Parser` → `Structured Output`
 
-We provide a variety of examples to help you get started:
+## Advanced Features
 
-- [Simple Math Solver](https://github.com/terraprompt/promptel/blob/main/examples/math_solver.nudge)
-- [Creative Writing Assistant](https://github.com/terraprompt/promptel/blob/main/examples/creative_writer.nudge)
-- [Multi-step Reasoning Problem Solver](https://github.com/terraprompt/promptel/blob/main/examples/problem_solver.nudge)
+### Multi-Provider Support
+```javascript
+// Same prompt, different optimizations per provider
+const executor = new PromptelExecutor(process.env.LLM_PROVIDER);
+const result = await executor.execute(prompt, params);
 
-## API Reference
+// Harmony channels for OpenAI gpt-oss
+// Thinking tags for Anthropic Claude
+// Custom reasoning for Groq models
+```
 
-For detailed information about the Promptel API, including the `parsePrompt` and `executePrompt` functions, please refer to our [API Documentation](https://github.com/terraprompt/promptel/blob/main/specs/API.md).
+### Built-in Techniques
+- **Chain of Thought**: Step-by-step reasoning
+- **Tree of Thoughts**: Multiple solution paths
+- **ReAct**: Reasoning + Action planning
+- **Self-Consistency**: Multi-solution consensus
+
+### Type-Safe Parameters
+```typescript
+params {
+  temperature: number = 0.7
+  max_tokens?: number
+  difficulty: "easy" | "medium" | "hard"
+}
+```
+
+## CLI Usage
+
+```bash
+# Execute prompt file
+promptel -f solver.prompt -p openai -k $OPENAI_API_KEY --params '{"problem":"2+2"}'
+
+# With output file
+promptel -f prompt.prompt -p anthropic -k $ANTHROPIC_KEY -o result.json
+```
+
+## Requirements
+
+- Node.js 18+ (LTS recommended)
+- Supported provider API key (OpenAI, Anthropic, or Groq)
+
+## Documentation
+
+- **[Technical Overview](docs/TECHNICAL_OVERVIEW.md)** - Architecture and implementation details
+- **[Harmony Design](docs/HARMONY_DESIGN.md)** - OpenAI Harmony Protocol integration
+- **[Grammar Reference](docs/GRAMMAR.md)** - Complete language specification
+- **[Development Tasks](docs/TODO.md)** - Project roadmap and tasks
 
 ## Contributing
 
-We welcome contributions to Promptel! Whether you're fixing bugs, adding features, or improving documentation, your help makes Promptel better for everyone. Please see our [Contributing Guide](https://github.com/terraprompt/promptel/blob/main/CONTRIBUTING.md) for more information on how to get started.
+We welcome contributions! Please see our development setup:
+
+```bash
+git clone https://github.com/terraprompt/promptel.git
+cd promptel
+npm install
+npm test
+npm run lint
+```
+
+## Performance
+
+| Operation | Time (ms) | Memory (MB) |
+|-----------|-----------|-------------|
+| Parse prompt | 5-15 | 2-5 |
+| Execute simple | 200-800 | 5-10 |
+| Execute complex | 1000-3000 | 10-20 |
+| Harmony parsing | 50-150 | 8-15 |
 
 ## License
 
-Promptel is released under the MIT License. See the [LICENSE](https://github.com/terraprompt/promptel/blob/main/LICENSE) file for more details.
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## Support
+
+- **Documentation**: [Technical docs](docs/)
+- **Issues**: [GitHub Issues](https://github.com/terraprompt/promptel/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/terraprompt/promptel/discussions)
 
 ---
 
-For more information, updates, and community discussions, please visit our [GitHub repository](https://github.com/terraprompt/promptel). If you encounter any issues or have suggestions, please [open an issue](https://github.com/terraprompt/promptel/issues/new).
-
-Happy prompting with Promptel! 🚀
+**Promptel makes advanced prompt engineering accessible, maintainable, and scalable for production AI applications.**

@@ -24,6 +24,7 @@
     "commander": "^12.1.0",
     "dotenv": "^16.4.5",
     "groq-sdk": "^0.7.0",
+    "harmony-protocol-js": "^0.1.0",
     "openai": "^4.64.0"
   },
   "devDependencies": {
@@ -33,10 +34,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/terraprompt/promptel.git"
+    "url": "https://github.com/skelf-research/promptel.git"
   },
   "bugs": {
-    "url": "https://github.com/terraprompt/promptel/issues"
+    "url": "https://github.com/skelf-research/promptel/issues"
   },
-  "homepage": "https://github.com/terraprompt/promptel#readme"
+  "homepage": "https://github.com/skelf-research/promptel#readme"
 }

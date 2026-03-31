@@ -1,9 +1,21 @@
 // executor.js
 const { createProvider } = require('./provider');
+const {
+    HarmonyRenderer,
+    Conversation,
+    Message,
+    Role,
+    ReasoningEffort,
+    Channel,
+    DEFAULT_HARMONY_ENCODING,
+    createSystemContent
+} = require('harmony-protocol-js');
 
 class PromptelExecutor {
     constructor(providerType, apiKey) {
         this.provider = createProvider(providerType, apiKey);
+        this.harmonyEncoding = DEFAULT_HARMONY_ENCODING;
+        this.harmonyRenderer = new HarmonyRenderer();
     }
 
     async execute(ast, params = {}) {
@@ -13,6 +25,12 @@ class PromptelExecutor {
             constraints: {},
             hooks: {},
             techniques: [],
+            harmony: {
+                enabled: false,
+                reasoning: ReasoningEffort.MEDIUM,
+                channels: [Channel.FINAL],
+                conversation: new Conversation()
+            }
         };
 
         for (const prompt of ast.prompts) {
@@ -30,37 +48,43 @@ class PromptelExecutor {
 
     async executeSection(section, context) {
         switch (section.type) {
-            case 'meta':
-                this.executeMeta(section, context);
-                break;
-            case 'params':
-                this.executeParams(section, context);
-                break;
-            case 'body':
-                await this.executeBody(section, context);
-                break;
-            case 'technique':
-                await this.executeTechnique(section, context);
-                break;
-            case 'constraints':
-                this.executeConstraints(section, context);
-                break;
-            case 'output':
-                this.executeOutput(section, context);
-                break;
-            case 'hooks':
-                this.executeHooks(section, context);
-                break;
-            default:
-                throw new Error(`Unknown section type: ${section.type}`);
+        case 'meta':
+            this.executeMeta(section, context);
+            break;
+        case 'params':
+            this.executeParams(section, context);
+            break;
+        case 'body':
+            await this.executeBody(section, context);
+            break;
+        case 'technique':
+            await this.executeTechnique(section, context);
+            break;
+        case 'constraints':
+            this.executeConstraints(section, context);
+            break;
+        case 'output':
+            this.executeOutput(section, context);
+            break;
+        case 'hooks':
+            this.executeHooks(section, context);
+            break;
+        case 'harmony':
+            this.executeHarmony(section, context);
+            break;
+        default:
+            throw new Error(`Unknown section type: ${section.type}`);
         }
     }
 
     executeMeta(section, context) {
-        context.meta = section.fields.reduce((acc, field) => {
-            acc[field.name] = this.evaluateExpression(field.value, context);
-            return acc;
-        }, {});
+        context.meta = {};
+        if (section.fields && Array.isArray(section.fields)) {
+            context.meta = section.fields.reduce((acc, field) => {
+                acc[field.name] = this.evaluateExpression(field.value, context);
+                return acc;
+            }, {});
+        }
     }
 
     executeParams(section, context) {
@@ -71,7 +95,7 @@ class PromptelExecutor {
         
         for (const param of section.fields) {
             // Handle default values
-            if (!(param.name in context.params) && param.hasOwnProperty('defaultValue')) {
+            if (!(param.name in context.params) && Object.prototype.hasOwnProperty.call(param, 'defaultValue')) {
                 context.params[param.name] = param.defaultValue;
             }
             
@@ -123,6 +147,34 @@ class PromptelExecutor {
         }
     }
 
+    executeHarmony(section, context) {
+        // Enable harmony mode
+        context.harmony.enabled = true;
+
+        // Process harmony configuration fields
+        if (section.fields) {
+            for (const field of section.fields) {
+                const value = this.evaluateExpression(field.value, context);
+
+                switch (field.name) {
+                case 'reasoning':
+                    context.harmony.reasoning = value;
+                    break;
+                case 'channels':
+                    if (Array.isArray(value)) {
+                        context.harmony.channels = value;
+                    } else if (typeof value === 'string') {
+                        context.harmony.channels = [value];
+                    }
+                    break;
+                case 'encoding':
+                    context.harmony.encoding = value;
+                    break;
+                }
+            }
+        }
+    }
+
     getTechniqueHandler(techniqueType) {
         const handlers = {
             'chainOfThought': this.executeChainOfThought.bind(this),
@@ -161,19 +213,19 @@ class PromptelExecutor {
         context.instruction = this.interpolate(technique.instruction, context);
     }
 
-    async executeSelfConsistency(technique, context) {
+    async executeSelfConsistency(_technique, _context) {
         // Implementation for Self-Consistency technique
     }
 
-    async executeTreeOfThoughts(technique, context) {
+    async executeTreeOfThoughts(_technique, _context) {
         // Implementation for Tree of Thoughts technique
     }
 
-    async executeReWOO(technique, context) {
+    async executeReWOO(_technique, _context) {
         // Implementation for ReWOO technique
     }
 
-    async executeReAct(technique, context) {
+    async executeReAct(_technique, _context) {
         // Implementation for ReAct technique
     }
 
@@ -205,7 +257,7 @@ class PromptelExecutor {
         return expr; // Return as-is for now
     }
 
-    createHookFunction(hook, context) {
+    createHookFunction(_hook, _context) {
         // Create a function from the hook definition
         return (input) => {
             // Execute the hook logic here
@@ -214,6 +266,12 @@ class PromptelExecutor {
     }
 
     async formatOutput(context) {
+        // If Harmony mode is enabled, use Harmony workflow
+        if (context.harmony.enabled) {
+            return await this.formatHarmonyOutput(context);
+        }
+
+        // Original non-Harmony output formatting
         let result = '';
 
         if (context.meta) {
@@ -236,6 +294,87 @@ class PromptelExecutor {
 
         if (Object.keys(context.output).length > 0) {
             result += `Output:\n${JSON.stringify(context.output, null, 2)}\n`;
+        }
+
+        // Apply post-processing hook if it exists
+        if (context.hooks.postProcess) {
+            result = context.hooks.postProcess(result);
+        }
+
+        return result;
+    }
+
+    async formatHarmonyOutput(context) {
+        // Build Harmony conversation using the new API
+        const conversation = new Conversation();
+
+        // Create system content with Harmony features
+        let systemContent = createSystemContent();
+
+        if (context.meta) {
+            if (context.meta.name) {
+                systemContent = systemContent.withKnowledgeCutoff('2024-06')
+                    .withReasoningEffort(context.harmony.reasoning);
+            }
+        }
+
+        // Add required channels if specified
+        if (context.harmony.channels && context.harmony.channels.length > 0) {
+            systemContent = systemContent.withRequiredChannels(context.harmony.channels);
+        }
+
+        // Add system message
+        conversation.addMessage(Message.system(systemContent));
+
+        // Add developer instructions if we have body content or techniques
+        if (context.bodyContent || context.techniques.length > 0) {
+            let devContent = 'Follow the user instructions carefully.';
+
+            if (context.techniques.length > 0) {
+                devContent += ' Use structured reasoning and show your work in the analysis channel.';
+            }
+
+            conversation.addMessage(Message.developer(devContent));
+        }
+
+        // Add user message with the actual task
+        if (context.bodyContent) {
+            conversation.addMessage(Message.user(context.bodyContent));
+        }
+
+        // Render conversation as text for LLM provider
+        const conversationText = this.harmonyEncoding.renderConversation(conversation);
+
+        // Send to LLM
+        const llmResponse = await this.callLLM(conversationText, context.constraints);
+
+        // Parse the Harmony response from text
+        const messages = this.harmonyEncoding.parseMessagesFromText(llmResponse);
+
+        // Extract channels from the assistant message
+        const assistantMessages = messages.filter(m => m.role === Role.ASSISTANT);
+        let result = {
+            success: true,
+            channels: {},
+            metadata: {
+                reasoning: context.harmony.reasoning,
+                totalMessages: messages.length,
+                assistantMessages: assistantMessages.length
+            }
+        };
+
+        // Process all assistant messages and organize by channel
+        for (const message of assistantMessages) {
+            const channel = message.channel || 'final';
+            if (!result.channels[channel]) {
+                result.channels[channel] = '';
+            }
+            result.channels[channel] += message.content;
+        }
+
+        // Ensure there's at least a final channel
+        if (Object.keys(result.channels).length === 0 && assistantMessages.length > 0) {
+            result.channels.final = assistantMessages[0].content;
         }
 
         // Apply post-processing hook if it exists
