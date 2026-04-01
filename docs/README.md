@@ -8,6 +8,7 @@ This directory contains detailed technical documentation for Promptel.
 - **[Technical Overview](TECHNICAL_OVERVIEW.md)** - Complete technical architecture, competitive analysis, and implementation details
 - **[Harmony Protocol Design](HARMONY_DESIGN.md)** - Deep dive into OpenAI Harmony Protocol integration
 - **[Grammar Reference](GRAMMAR.md)** - Complete Promptel language specification and syntax guide
+- **[Dual Format Guide](DUAL_FORMAT_GUIDE.md)** - Complete guide to .prompt and .yml format equivalency
 
 ### Development
 - **[TODO](TODO.md)** - Project roadmap, current tasks, and development priorities

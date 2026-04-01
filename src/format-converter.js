@@ -196,9 +196,11 @@ class FormatConverter {
     // Helper methods for converting sections to YAML
     convertMetaToYaml(section) {
         const meta = {};
-        if (section.fields) {
+        if (section.fields && Array.isArray(section.fields)) {
             section.fields.forEach(field => {
-                meta[field.name] = field.value;
+                if (field && field.name !== undefined) {
+                    meta[field.name] = field.value;
+                }
             });
         }
         return meta;

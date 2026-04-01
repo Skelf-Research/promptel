@@ -1,6 +1,6 @@
 # Promptel
 
-**The first Node.js framework with native Harmony Protocol support for advanced prompt engineering.**
+**The first Node.js framework with native Harmony Protocol support for advanced prompt engineering. Supports both .prompt and .yml formats.**
 
 [![GitHub license](https://img.shields.io/github/license/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/blob/main/LICENSE)
 [![npm version](https://badge.fury.io/js/promptel.svg)](https://www.npmjs.com/package/promptel)
@@ -25,7 +25,7 @@ Modern AI applications need sophisticated prompt engineering, but implementing a
 npm install promptel
 ```
 
-### Basic Example
+### Basic Example (.prompt format)
 
 ```javascript
 import { parsePrompt, executePrompt } from 'promptel';
@@ -90,6 +90,59 @@ console.log(result.channels.analysis);   // Detailed reasoning process
 console.log(result.channels.commentary); // Verification and alternatives
 ```
 
+### YAML Format Example
+
+The same prompts can be written in YAML format for those who prefer structured configuration:
+
+```yaml
+name: MathSolver
+
+params:
+  problem:
+    type: string
+    required: true
+
+body:
+  text: "Solve: ${params.problem}"
+
+technique:
+  chainOfThought:
+    steps:
+      - name: "Analysis"
+        text: "Break down the problem"
+      - name: "Solution"
+        text: "Calculate step by step"
+      - name: "Verification"
+        text: "Verify the answer"
+```
+
+```javascript
+// Works with both formats automatically
+const yamlPrompt = fs.readFileSync('math_solver.yml', 'utf-8');
+const result = await executePrompt(yamlPrompt, { problem: "What is 25% of 240?" });
+```
+
+## Format Conversion
+
+Convert between .prompt and .yml formats:
+
+```bash
+# Convert .prompt to YAML
+promptel --convert yaml -f solver.prompt -o solver.yml
+
+# Convert YAML to .prompt
+promptel --convert prompt -f solver.yml -o solver.prompt
+```
+
+```javascript
+// Programmatic conversion
+import { FormatConverter } from 'promptel';
+
+const converter = new FormatConverter();
+const yamlVersion = converter.promptToYaml(promptContent);
+const promptVersion = converter.yamlToPrompt(yamlContent);
+```
+
 ## Architecture
 
 ```
@@ -102,7 +155,7 @@ console.log(result.channels.commentary); // Verification and alternatives
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-**Flow**: `.prompt file` → `Parser` → `AST` → `Executor` → `Provider` → `LLM` → `Response Parser` → `Structured Output`
+**Flow**: `.prompt/.yml file` → `Parser` → `AST` → `Executor` → `Provider` → `LLM` → `Response Parser` → `Structured Output`
 
 ## Advanced Features
 
@@ -135,11 +188,18 @@ params {
 ## CLI Usage
 
 ```bash
-# Execute prompt file
+# Execute prompt file (.prompt format)
 promptel -f solver.prompt -p openai -k $OPENAI_API_KEY --params '{"problem":"2+2"}'
+
+# Execute YAML format
+promptel -f solver.yml -p openai -k $OPENAI_API_KEY --params '{"problem":"2+2"}'
 
 # With output file
 promptel -f prompt.prompt -p anthropic -k $ANTHROPIC_KEY -o result.json
+
+# Convert formats
+promptel --convert yaml -f solver.prompt -o solver.yml
+promptel --convert prompt -f solver.yml -o solver.prompt
 ```
 
 ## Requirements
@@ -152,6 +212,7 @@ promptel -f prompt.prompt -p anthropic -k $ANTHROPIC_KEY -o result.json
 - **[Technical Overview](docs/TECHNICAL_OVERVIEW.md)** - Architecture and implementation details
 - **[Harmony Design](docs/HARMONY_DESIGN.md)** - OpenAI Harmony Protocol integration
 - **[Grammar Reference](docs/GRAMMAR.md)** - Complete language specification
+- **[Dual Format Guide](docs/DUAL_FORMAT_GUIDE.md)** - Complete .prompt ↔ .yml format guide
 - **[Development Tasks](docs/TODO.md)** - Project roadmap and tasks
 
 ## Contributing

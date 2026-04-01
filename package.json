@@ -25,6 +25,7 @@
     "dotenv": "^16.4.5",
     "groq-sdk": "^0.7.0",
     "harmony-protocol-js": "^0.1.0",
+    "js-yaml": "^4.1.0",
     "openai": "^4.64.0"
   },
   "devDependencies": {
