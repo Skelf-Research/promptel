@@ -1,0 +1,112 @@
+site_name: Promptel
+site_description: Declarative prompt engineering framework with native Harmony Protocol support
+site_url: https://promptel.dev
+repo_url: https://github.com/skelf-research/promptel
+repo_name: skelf-research/promptel
+edit_uri: edit/main/documentation/docs/
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+  logo: assets/logo.svg
+  favicon: assets/favicon.ico
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: skelf-research
+      repo: promptel
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Your First Prompt: getting-started/first-prompt.md
+  - Guides:
+    - Prompt Formats: guides/formats.md
+    - Prompting Techniques: guides/techniques.md
+    - Providers: guides/providers.md
+    - Harmony Protocol: guides/harmony.md
+  - Reference:
+    - CLI: reference/cli.md
+    - API: reference/api.md
+    - Language Spec: reference/language.md
+  - Examples:
+    - Basic Examples: examples/basic.md
+    - Advanced Examples: examples/advanced.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/skelf-research/promptel
+    - icon: fontawesome/brands/npm
+      link: https://www.npmjs.com/package/promptel
+  generator: false
+
+copyright: Copyright &copy; 2024-2025 Skelf Research

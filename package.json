@@ -1,23 +1,44 @@
 {
   "name": "promptel",
-  "version": "0.2.0",
+  "version": "0.3.0",
+  "description": "Declarative prompt engineering framework with native Harmony Protocol support",
+  "main": "src/index.js",
   "bin": {
     "promptel": "./src/cli.js"
   },
-  "description": "A declarative language for crafting sophisticated prompts for Large Language Models",
-  "main": "src/index.js",
   "scripts": {
-    "test": "jest",
-    "lint": "eslint src"
+    "test": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:integration": "node examples/tests/test_harmony.js && node examples/tests/test_simple_conversion.js",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix",
+    "validate": "npm run lint && npm run test",
+    "prepublishOnly": "npm run validate"
   },
   "keywords": [
-    "LLM",
+    "llm",
+    "prompt-engineering",
+    "ai",
+    "openai",
+    "anthropic",
+    "claude",
+    "groq",
+    "harmony-protocol",
+    "chain-of-thought",
+    "declarative",
     "prompt",
-    "AI",
-    "language"
+    "gpt"
   ],
-  "author": "TerraPrompt",
+  "author": "Skelf Research",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "src/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.3",
     "chevrotain": "^10.5.0",
@@ -35,10 +56,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/skelf-research/promptel.git"
+    "url": "git+https://github.com/skelf-research/promptel.git"
   },
   "bugs": {
     "url": "https://github.com/skelf-research/promptel/issues"
   },
-  "homepage": "https://github.com/skelf-research/promptel#readme"
+  "homepage": "https://promptel.dev"
 }

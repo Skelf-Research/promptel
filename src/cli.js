@@ -2,11 +2,13 @@
 // cli.js
 const fs = require('fs');
 const { program } = require('commander');
-const { parsePrompt, executePrompt } = require('./index');
+const { executePrompt } = require('./index');
 const FormatConverter = require('./format-converter');
 
+const pkg = require('../package.json');
+
 program
-    .version('1.0.0')
+    .version(pkg.version)
     .description('Promptel CLI - Execute Promptel prompts in .prompt or .yml format')
     .requiredOption('-f, --file <path>', 'Path to the Promptel file (.prompt or .yml)')
     .option('-p, --provider <type>', 'Provider type (openai, groq, or claude) [required for execution]')

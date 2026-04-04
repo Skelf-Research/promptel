@@ -2,87 +2,87 @@ const PromptelParser = require('../src/parser');
 
 // Mock harmony-protocol-js before requiring executor
 jest.mock('harmony-protocol-js', () => ({
-  HarmonyRenderer: class MockHarmonyRenderer {},
-  Conversation: class MockConversation {
-    addMessage() {}
-  },
-  Message: {
-    system: (content) => ({ role: 'system', content }),
-    developer: (content) => ({ role: 'developer', content }),
-    user: (content) => ({ role: 'user', content })
-  },
-  Role: {
-    ASSISTANT: 'assistant',
-    USER: 'user',
-    SYSTEM: 'system'
-  },
-  ReasoningEffort: {
-    LOW: 'low',
-    MEDIUM: 'medium',
-    HIGH: 'high'
-  },
-  Channel: {
-    FINAL: 'final'
-  },
-  DEFAULT_HARMONY_ENCODING: {
-    renderConversation: () => 'mocked conversation',
-    parseMessagesFromText: (text) => [
-      { role: 'assistant', channel: 'final', content: 'Mocked response' }
-    ]
-  },
-  createSystemContent: () => ({
-    withKnowledgeCutoff: () => ({
-      withReasoningEffort: () => ({
+    HarmonyRenderer: class MockHarmonyRenderer {},
+    Conversation: class MockConversation {
+        addMessage() {}
+    },
+    Message: {
+        system: (content) => ({ role: 'system', content }),
+        developer: (content) => ({ role: 'developer', content }),
+        user: (content) => ({ role: 'user', content })
+    },
+    Role: {
+        ASSISTANT: 'assistant',
+        USER: 'user',
+        SYSTEM: 'system'
+    },
+    ReasoningEffort: {
+        LOW: 'low',
+        MEDIUM: 'medium',
+        HIGH: 'high'
+    },
+    Channel: {
+        FINAL: 'final'
+    },
+    DEFAULT_HARMONY_ENCODING: {
+        renderConversation: () => 'mocked conversation',
+        parseMessagesFromText: (_text) => [
+            { role: 'assistant', channel: 'final', content: 'Mocked response' }
+        ]
+    },
+    createSystemContent: () => ({
+        withKnowledgeCutoff: () => ({
+            withReasoningEffort: () => ({
+                withRequiredChannels: (channels) => ({
+                    channels: channels
+                })
+            })
+        }),
         withRequiredChannels: (channels) => ({
-          channels: channels
+            channels: channels
         })
-      })
-    }),
-    withRequiredChannels: (channels) => ({
-      channels: channels
     })
-  })
 }));
 
 const PromptelExecutor = require('../src/executor');
 
 describe('PromptelExecutor', () => {
-  let parser;
-  let executor;
+    let parser;
+    let executor;
 
-  beforeEach(() => {
+    beforeEach(() => {
     // Set fake API key for testing
-    process.env.PROMPTEL_API_KEY = 'fake-key-for-testing';
+        process.env.PROMPTEL_API_KEY = 'fake-key-for-testing';
 
-    parser = new PromptelParser();
-    executor = new PromptelExecutor('openai', 'fake-key');
+        parser = new PromptelParser();
+        executor = new PromptelExecutor('openai', 'fake-key');
 
-    // Mock the callLLM method
-    executor.callLLM = async function(prompt, constraints) {
-      return 'Mocked LLM response';
-    };
+        // Mock the callLLM method
+        executor.callLLM = async function(_prompt, _constraints) {
+            return 'Mocked LLM response';
+        };
 
-    // Mock the provider to avoid actual API calls
-    executor.provider = {
-      generateResponse: async (prompt, constraints) => 'Mocked response'
-    };
-  });
+        // Mock the provider to avoid actual API calls
+        executor.provider = {
+            generateResponse: async (_prompt, _constraints) => 'Mocked response'
+        };
+    });
 
-  test('should execute a simple prompt', async () => {
-    const code = `
+    test('should execute a simple prompt', async () => {
+        const code = `
       prompt SimplePrompt {
         body {
           text\`Hello, world!\`
         }
       }
     `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast);
-    expect(result).toContain('Hello, world!');
-  });
+        const ast = parser.parse(code);
+        const result = await executor.execute(ast);
+        expect(result).toContain('Hello, world!');
+    });
 
-  test('should handle params correctly', async () => {
-    const code = `
+    test('should handle params correctly', async () => {
+        const code = `
       prompt ParamPrompt {
         params {
           name: string
@@ -93,14 +93,14 @@ describe('PromptelExecutor', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast, { name: 'Alice' });
-    expect(result).toContain('Hello, Alice!');
-    expect(result).toContain('30 years old');
-  });
+        const ast = parser.parse(code);
+        const result = await executor.execute(ast, { name: 'Alice' });
+        expect(result).toContain('Hello, Alice!');
+        expect(result).toContain('30 years old');
+    });
 
-  test.skip('should handle techniques', async () => {
-    const code = `
+    test.skip('should handle techniques', async () => {
+        const code = `
       prompt TechniquePrompt {
         technique {
           chainOfThought {
@@ -117,17 +117,17 @@ describe('PromptelExecutor', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    const result = await executor.execute(ast);
-    expect(result).toContain('Step: Step 1');
-    expect(result).toContain('This is step 1');
-    expect(result).toContain('Step: Step 2');
-    expect(result).toContain('This is step 2');
-    expect(result).toContain('Final answer');
-  });
+        const ast = parser.parse(code);
+        const result = await executor.execute(ast);
+        expect(result).toContain('Step: Step 1');
+        expect(result).toContain('This is step 1');
+        expect(result).toContain('Step: Step 2');
+        expect(result).toContain('This is step 2');
+        expect(result).toContain('Final answer');
+    });
 
-  test('should handle Harmony integration', async () => {
-    const code = `
+    test('should handle Harmony integration', async () => {
+        const code = `
       prompt HarmonyPrompt {
         harmony {
           reasoning: "high"
@@ -138,16 +138,16 @@ describe('PromptelExecutor', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
+        const ast = parser.parse(code);
 
-    // Mock Harmony response parsing
-    executor.callLLM = async function(prompt, constraints) {
-      return '<|start|>assistant<|channel|>final<|message|>The answer is 42<|end|>';
-    };
+        // Mock Harmony response parsing
+        executor.callLLM = async function(_prompt, _constraints) {
+            return '<|start|>assistant<|channel|>final<|message|>The answer is 42<|end|>';
+        };
 
-    const result = await executor.execute(ast);
-    expect(result.success).toBe(true);
-    expect(result.channels).toBeDefined();
-    expect(result.channels.final).toContain('Mocked response');
-  });
+        const result = await executor.execute(ast);
+        expect(result.success).toBe(true);
+        expect(result.channels).toBeDefined();
+        expect(result.channels.final).toContain('Mocked response');
+    });
 });

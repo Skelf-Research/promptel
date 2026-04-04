@@ -1,4 +1,9 @@
-// executor.js
+/**
+ * Prompt execution engine with Harmony Protocol support.
+ * Handles AST execution, technique processing, and LLM interaction.
+ * @module executor
+ */
+
 const { createProvider } = require('./provider');
 const {
     HarmonyRenderer,
@@ -48,32 +53,32 @@ class PromptelExecutor {
 
     async executeSection(section, context) {
         switch (section.type) {
-        case 'meta':
-            this.executeMeta(section, context);
-            break;
-        case 'params':
-            this.executeParams(section, context);
-            break;
-        case 'body':
-            await this.executeBody(section, context);
-            break;
-        case 'technique':
-            await this.executeTechnique(section, context);
-            break;
-        case 'constraints':
-            this.executeConstraints(section, context);
-            break;
-        case 'output':
-            this.executeOutput(section, context);
-            break;
-        case 'hooks':
-            this.executeHooks(section, context);
-            break;
-        case 'harmony':
-            this.executeHarmony(section, context);
-            break;
-        default:
-            throw new Error(`Unknown section type: ${section.type}`);
+            case 'meta':
+                this.executeMeta(section, context);
+                break;
+            case 'params':
+                this.executeParams(section, context);
+                break;
+            case 'body':
+                await this.executeBody(section, context);
+                break;
+            case 'technique':
+                await this.executeTechnique(section, context);
+                break;
+            case 'constraints':
+                this.executeConstraints(section, context);
+                break;
+            case 'output':
+                this.executeOutput(section, context);
+                break;
+            case 'hooks':
+                this.executeHooks(section, context);
+                break;
+            case 'harmony':
+                this.executeHarmony(section, context);
+                break;
+            default:
+                throw new Error(`Unknown section type: ${section.type}`);
         }
     }
 
@@ -92,18 +97,18 @@ class PromptelExecutor {
         if (!section.fields || !Array.isArray(section.fields)) {
             return;
         }
-        
+
         for (const param of section.fields) {
             // Handle default values
             if (!(param.name in context.params) && Object.prototype.hasOwnProperty.call(param, 'defaultValue')) {
                 context.params[param.name] = param.defaultValue;
             }
-            
+
             // Check if required parameter is missing
             if (!(param.name in context.params) && !param.isOptional) {
                 throw new Error(`Missing required parameter: ${param.name}`);
             }
-            
+
             // Type checking could be added here
         }
     }
@@ -157,19 +162,19 @@ class PromptelExecutor {
                 const value = this.evaluateExpression(field.value, context);
 
                 switch (field.name) {
-                case 'reasoning':
-                    context.harmony.reasoning = value;
-                    break;
-                case 'channels':
-                    if (Array.isArray(value)) {
-                        context.harmony.channels = value;
-                    } else if (typeof value === 'string') {
-                        context.harmony.channels = [value];
-                    }
-                    break;
-                case 'encoding':
-                    context.harmony.encoding = value;
-                    break;
+                    case 'reasoning':
+                        context.harmony.reasoning = value;
+                        break;
+                    case 'channels':
+                        if (Array.isArray(value)) {
+                            context.harmony.channels = value;
+                        } else if (typeof value === 'string') {
+                            context.harmony.channels = [value];
+                        }
+                        break;
+                    case 'encoding':
+                        context.harmony.encoding = value;
+                        break;
                 }
             }
         }

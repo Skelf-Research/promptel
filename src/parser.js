@@ -264,20 +264,20 @@ class NudgeParser extends CstParser {
         $.RULE('paramField', () => {
             // Parameter name
             $.CONSUME(Identifier);
-            
+
             // Handle optional parameter marker
             $.OPTION(() => $.CONSUME(QuestionMark));
-            
+
             // Colon and type
             $.CONSUME(Colon);
             $.SUBRULE($.type); // Type annotation
-            
+
             // Optional default value
             $.OPTION2(() => {
                 $.CONSUME(Equals);
                 return $.SUBRULE($.value);
             });
-            
+
             // Optional semicolon
             $.OPTION3(() => $.CONSUME(Semicolon));
         });
@@ -365,7 +365,7 @@ class NudgeParser extends CstParser {
                 { ALT: () => $.CONSUME(NumberLiteral) },
                 { ALT: () => $.CONSUME(BooleanLiteral) }
             ]);
-            
+
             // Handle member access chain and function calls (like params.items, input.toUpperCase())
             $.MANY(() => {
                 $.CONSUME(Dot);
@@ -381,15 +381,15 @@ class NudgeParser extends CstParser {
                     $.CONSUME(RParen);
                 });
             });
-            
+
             // Handle assignment expressions
             const hasAssignment = $.OPTION2(() => $.CONSUME(Equals));
-            
+
             if (hasAssignment) {
                 // Parse the right-hand side of the assignment
                 $.SUBRULE3($.expression);
             }
-            
+
             return left;
         });
 
@@ -490,155 +490,155 @@ class NudgeLangParser {
         if (!cst.children || !cst.children.prompt) {
             return { type: 'Program', prompts: [] };
         }
-        
+
         const prompts = cst.children.prompt.map(promptCst => {
             const name = promptCst.children.Identifier[0].image;
-            
+
             const sections = promptCst.children.section ? promptCst.children.section.map(sectionCst => {
                 const sectionType = Object.keys(sectionCst.children)[0];
-                
-                switch (sectionType) {
-                case 'bodySection': {
-                    const bodySectionCst = sectionCst.children.bodySection[0];
 
-                    const content = [];
-                        
-                    // Handle text blocks
-                    if (bodySectionCst.children && bodySectionCst.children.textBlock) {
-                        bodySectionCst.children.textBlock.forEach(textBlockCst => {
-                            content.push({
-                                type: 'TextBlock',
-                                content: textBlockCst.children.BacktickString[0].image,
+                switch (sectionType) {
+                    case 'bodySection': {
+                        const bodySectionCst = sectionCst.children.bodySection[0];
+
+                        const content = [];
+
+                        // Handle text blocks
+                        if (bodySectionCst.children && bodySectionCst.children.textBlock) {
+                            bodySectionCst.children.textBlock.forEach(textBlockCst => {
+                                content.push({
+                                    type: 'TextBlock',
+                                    content: textBlockCst.children.BacktickString[0].image,
+                                });
                             });
-                        });
-                    }
-                        
-                    // Handle if statements
-                    if (bodySectionCst.children && bodySectionCst.children.ifStatement) {
-                        bodySectionCst.children.ifStatement.forEach(_ifStatementCst => {
-                            content.push({
-                                type: 'IfStatement',
+                        }
+
+                        // Handle if statements
+                        if (bodySectionCst.children && bodySectionCst.children.ifStatement) {
+                            bodySectionCst.children.ifStatement.forEach(_ifStatementCst => {
+                                content.push({
+                                    type: 'IfStatement',
                                 // For now, just mark that we have an if statement
                                 // We'll implement full parsing later
+                                });
                             });
-                        });
-                    }
-                        
-                    // Handle for loops
-                    if (bodySectionCst.children && bodySectionCst.children.forLoop) {
-                        bodySectionCst.children.forLoop.forEach(_forLoopCst => {
-                            content.push({
-                                type: 'ForLoop',
+                        }
+
+                        // Handle for loops
+                        if (bodySectionCst.children && bodySectionCst.children.forLoop) {
+                            bodySectionCst.children.forLoop.forEach(_forLoopCst => {
+                                content.push({
+                                    type: 'ForLoop',
                                 // For now, just mark that we have a for loop
                                 // We'll implement full parsing later
+                                });
                             });
-                        });
-                    }
-                        
-                    return {
-                        type: 'body',  // Changed from 'BodySection' to 'body'
-                        content,
-                    };
-                }
-                case 'metaSection': {
-                    return {
-                        type: 'meta',  // Changed from 'MetaSection' to 'meta'
-                        // For now, just return the type. We'll implement full parsing later
-                    };
-                }
-                    
-                case 'paramsSection': {
-                    const paramsSectionCst = sectionCst.children.paramsSection[0];
+                        }
 
-                    const fields = [];
-                        
-                    // Handle param fields
-                    if (paramsSectionCst.children && paramsSectionCst.children.paramField) {
-                        paramsSectionCst.children.paramField.forEach(paramFieldCst => {
-                            const field = {
-                                type: 'ParamField',
-                                name: paramFieldCst.children.Identifier[0].image,
-                                isOptional: !!paramFieldCst.children.QuestionMark,
-                            };
-                                
-                            // Handle default value if present
-                            if (paramFieldCst.children.Equals) {
+                        return {
+                            type: 'body',  // Changed from 'BodySection' to 'body'
+                            content,
+                        };
+                    }
+                    case 'metaSection': {
+                        return {
+                            type: 'meta',  // Changed from 'MetaSection' to 'meta'
+                        // For now, just return the type. We'll implement full parsing later
+                        };
+                    }
+
+                    case 'paramsSection': {
+                        const paramsSectionCst = sectionCst.children.paramsSection[0];
+
+                        const fields = [];
+
+                        // Handle param fields
+                        if (paramsSectionCst.children && paramsSectionCst.children.paramField) {
+                            paramsSectionCst.children.paramField.forEach(paramFieldCst => {
+                                const field = {
+                                    type: 'ParamField',
+                                    name: paramFieldCst.children.Identifier[0].image,
+                                    isOptional: !!paramFieldCst.children.QuestionMark,
+                                };
+
+                                // Handle default value if present
+                                if (paramFieldCst.children.Equals) {
                                 // Try to extract the default value
-                                const valueCst = paramFieldCst.children.value ? paramFieldCst.children.value[0] : null;
-                                if (valueCst) {
+                                    const valueCst = paramFieldCst.children.value ? paramFieldCst.children.value[0] : null;
+                                    if (valueCst) {
                                     // This is a simplified implementation
                                     // We could implement proper value extraction here
-                                    if (valueCst.children.StringLiteral) {
-                                        field.defaultValue = valueCst.children.StringLiteral[0].image;
-                                    } else if (valueCst.children.NumberLiteral) {
-                                        field.defaultValue = parseFloat(valueCst.children.NumberLiteral[0].image);
-                                    } else if (valueCst.children.BooleanLiteral) {
-                                        field.defaultValue = valueCst.children.BooleanLiteral[0].image === 'true';
-                                    } else {
-                                        field.defaultValue = valueCst.children.Identifier ? 
-                                            valueCst.children.Identifier[0].image : 
-                                            null;
+                                        if (valueCst.children.StringLiteral) {
+                                            field.defaultValue = valueCst.children.StringLiteral[0].image;
+                                        } else if (valueCst.children.NumberLiteral) {
+                                            field.defaultValue = parseFloat(valueCst.children.NumberLiteral[0].image);
+                                        } else if (valueCst.children.BooleanLiteral) {
+                                            field.defaultValue = valueCst.children.BooleanLiteral[0].image === 'true';
+                                        } else {
+                                            field.defaultValue = valueCst.children.Identifier ?
+                                                valueCst.children.Identifier[0].image :
+                                                null;
+                                        }
                                     }
                                 }
-                            }
-                                
-                            fields.push(field);
-                        });
+
+                                fields.push(field);
+                            });
+                        }
+
+                        return {
+                            type: 'params',
+                            fields,
+                        };
                     }
-                        
-                    return {
-                        type: 'params',
-                        fields,
-                    };
-                }
-                case 'constraintsSection':
-                    return {
-                        type: 'constraints',  // Changed from 'ConstraintsSection' to 'constraints'
+                    case 'constraintsSection':
+                        return {
+                            type: 'constraints',  // Changed from 'ConstraintsSection' to 'constraints'
                         // For now, just return the type. We'll implement full parsing later
-                    };
-                        
-                case 'outputSection':
-                    return {
-                        type: 'output',  // Changed from 'OutputSection' to 'output'
-                        // For now, just return the type. We'll implement full parsing later
-                    };
-                        
-                case 'hooksSection':
-                    return {
-                        type: 'hooks',  // Changed from 'HooksSection' to 'hooks'
-                        // For now, just return the type. We'll implement full parsing later
-                    };
-                        
-                case 'techniqueSection':
-                    return {
-                        type: 'technique',  // Changed from 'TechniqueSection' to 'technique'
-                        // For now, just return the type. We'll implement full parsing later
-                    };
-                        
-                case 'contextSection':
-                    return {
-                        type: 'context',  // Changed from 'ContextSection' to 'context'
-                        // For now, just return the type. We'll implement full parsing later
-                    };
+                        };
 
-                case 'harmonySection':
-                    return {
-                        type: 'harmony',
-                        fields: sectionCst.children.harmonyField?.map(fieldCst => ({
-                            name: this.extractHarmonyFieldName(fieldCst),
-                            value: this.extractHarmonyFieldValue(fieldCst)
-                        })) || []
-                    };
+                    case 'outputSection':
+                        return {
+                            type: 'output',  // Changed from 'OutputSection' to 'output'
+                        // For now, just return the type. We'll implement full parsing later
+                        };
 
-                default:
+                    case 'hooksSection':
+                        return {
+                            type: 'hooks',  // Changed from 'HooksSection' to 'hooks'
+                        // For now, just return the type. We'll implement full parsing later
+                        };
+
+                    case 'techniqueSection':
+                        return {
+                            type: 'technique',  // Changed from 'TechniqueSection' to 'technique'
+                        // For now, just return the type. We'll implement full parsing later
+                        };
+
+                    case 'contextSection':
+                        return {
+                            type: 'context',  // Changed from 'ContextSection' to 'context'
+                        // For now, just return the type. We'll implement full parsing later
+                        };
+
+                    case 'harmonySection':
+                        return {
+                            type: 'harmony',
+                            fields: sectionCst.children.harmonyField?.map(fieldCst => ({
+                                name: this.extractHarmonyFieldName(fieldCst),
+                                value: this.extractHarmonyFieldValue(fieldCst)
+                            })) || []
+                        };
+
+                    default:
                     // Handle other section types similarly
-                    return {
-                        type: sectionType,
+                        return {
+                            type: sectionType,
                         // Add more properties based on the section type
-                    };
+                        };
                 }
             }) : [];
-            
+
             return {
                 type: 'Prompt',
                 name,

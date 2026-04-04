@@ -2,43 +2,43 @@
 const PromptelParser = require('../src/parser');
 
 describe('PromptelParser', () => {
-  let parser;
+    let parser;
 
-  beforeEach(() => {
-    parser = new PromptelParser();
-  });
+    beforeEach(() => {
+        parser = new PromptelParser();
+    });
 
-  test('should parse a simple prompt', () => {
-    const code = `
+    test('should parse a simple prompt', () => {
+        const code = `
       prompt SimplePrompt {
         body {
           text\`Hello, world!\`
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.type).toBe('Program');
-    expect(ast.prompts.length).toBe(1);
-    expect(ast.prompts[0].type).toBe('Prompt');
-    expect(ast.prompts[0].name).toBe('SimplePrompt');
-    expect(ast.prompts[0].sections.length).toBe(1);
-    expect(ast.prompts[0].sections[0].type).toBe('body');
-  });
+        const ast = parser.parse(code);
+        expect(ast.type).toBe('Program');
+        expect(ast.prompts.length).toBe(1);
+        expect(ast.prompts[0].type).toBe('Prompt');
+        expect(ast.prompts[0].name).toBe('SimplePrompt');
+        expect(ast.prompts[0].sections.length).toBe(1);
+        expect(ast.prompts[0].sections[0].type).toBe('body');
+    });
 
-  test('should parse interpolation in text blocks', () => {
-    const code = `
+    test('should parse interpolation in text blocks', () => {
+        const code = `
       prompt InterpolationPrompt {
         body {
           text\`Hello, \${params.name}! You are \${params.age} years old.\`
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].content[0].type).toBe('TextBlock');
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].content[0].type).toBe('TextBlock');
+    });
 
-  test('should parse a prompt with all section types', () => {
-    const code = `
+    test('should parse a prompt with all section types', () => {
+        const code = `
       prompt ComplexPrompt {
         meta {
           name: "Complex Prompt"
@@ -77,16 +77,16 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.type).toBe('Program');
-    expect(ast.prompts.length).toBe(1);
-    expect(ast.prompts[0].type).toBe('Prompt');
-    expect(ast.prompts[0].name).toBe('ComplexPrompt');
-    expect(ast.prompts[0].sections.length).toBe(8);
-  });
+        const ast = parser.parse(code);
+        expect(ast.type).toBe('Program');
+        expect(ast.prompts.length).toBe(1);
+        expect(ast.prompts[0].type).toBe('Prompt');
+        expect(ast.prompts[0].name).toBe('ComplexPrompt');
+        expect(ast.prompts[0].sections.length).toBe(8);
+    });
 
-  test('should parse nested structures correctly', () => {
-    const code = `
+    test('should parse nested structures correctly', () => {
+        const code = `
       prompt NestedPrompt {
         body {
           if (params.condition) {
@@ -100,13 +100,13 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('body');
-    expect(ast.prompts[0].sections[0].content.length).toBe(2);
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].type).toBe('body');
+        expect(ast.prompts[0].sections[0].content.length).toBe(2);
+    });
 
-  test('should parse expressions correctly', () => {
-    const code = `
+    test('should parse expressions correctly', () => {
+        const code = `
       prompt ExpressionPrompt {
         body {
           text\`Result: \${2 + 3 * (4 - 1)}\`
@@ -115,13 +115,13 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('body');
-    expect(ast.prompts[0].sections[0].content.length).toBe(3);
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].type).toBe('body');
+        expect(ast.prompts[0].sections[0].content.length).toBe(3);
+    });
 
-  test('should parse object and array literals', () => {
-    const code = `
+    test('should parse object and array literals', () => {
+        const code = `
       prompt LiteralPrompt {
         body {
           text\`Object: \${{ name: "John", age: 30 }}\`
@@ -129,13 +129,13 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('body');
-    expect(ast.prompts[0].sections[0].content.length).toBe(2);
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].type).toBe('body');
+        expect(ast.prompts[0].sections[0].content.length).toBe(2);
+    });
 
-  test('should parse all prompting techniques', () => {
-    const code = `
+    test('should parse all prompting techniques', () => {
+        const code = `
       prompt TechniquePrompt {
         technique {
           chainOfThought {
@@ -196,12 +196,12 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('technique');
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].type).toBe('technique');
+    });
 
-  test('should parse different literal types correctly', () => {
-    const code = `
+    test('should parse different literal types correctly', () => {
+        const code = `
       prompt LiteralTypesPrompt {
         body {
           text\`Boolean: \${true}\`
@@ -211,19 +211,19 @@ describe('PromptelParser', () => {
         }
       }
     `;
-    const ast = parser.parse(code);
-    expect(ast.prompts[0].sections[0].type).toBe('body');
-    expect(ast.prompts[0].sections[0].content.length).toBe(4);
-  });
+        const ast = parser.parse(code);
+        expect(ast.prompts[0].sections[0].type).toBe('body');
+        expect(ast.prompts[0].sections[0].content.length).toBe(4);
+    });
 
-  test('should throw an error for invalid syntax', () => {
-    const code = `
+    test('should throw an error for invalid syntax', () => {
+        const code = `
       prompt InvalidPrompt {
         invalid_section {
           content: "This is not a valid section"
         }
       }
     `;
-    expect(() => parser.parse(code)).toThrow();
-  });
+        expect(() => parser.parse(code)).toThrow();
+    });
 });

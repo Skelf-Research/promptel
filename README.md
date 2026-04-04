@@ -1,251 +1,311 @@
 # Promptel
 
-**The first Node.js framework with native Harmony Protocol support for advanced prompt engineering. Supports both .prompt and .yml formats.**
+**Declarative prompt engineering. Write once, run anywhere.**
 
-[![GitHub license](https://img.shields.io/github/license/terraprompt/promptel.svg)](https://github.com/terraprompt/promptel/blob/main/LICENSE)
-[![npm version](https://badge.fury.io/js/promptel.svg)](https://www.npmjs.com/package/promptel)
-[![Node.js CI](https://github.com/terraprompt/promptel/workflows/Node.js%20CI/badge.svg)](https://github.com/terraprompt/promptel/actions)
+[![npm version](https://img.shields.io/npm/v/promptel.svg)](https://www.npmjs.com/package/promptel)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/skelf-research/promptel/pulls)
 
-## Why Promptel?
+---
 
-Modern AI applications need sophisticated prompt engineering, but implementing advanced techniques like Chain-of-Thought or handling multi-channel responses is complex and error-prone. **Promptel solves this with a declarative approach and native support for OpenAI's Harmony Protocol.**
+## What is Promptel?
 
-### Key Problems Solved
+Promptel is a declarative framework for building production-grade LLM prompts. Define your prompts in a clean DSL or YAML, use built-in techniques like Chain-of-Thought, and deploy across OpenAI, Anthropic, or Groq without changing code.
 
-- **Harmony Protocol Complexity**: Only Node.js framework with native gpt-oss support
-- **Advanced Reasoning Techniques**: Built-in Chain-of-Thought, Tree-of-Thoughts, ReAct
-- **Multi-Channel Responses**: Automatic parsing of analysis, commentary, and final outputs
-- **Provider Lock-in**: Abstract across OpenAI, Anthropic, Groq with consistent APIs
+```javascript
+const { executePrompt } = require('promptel');
 
-## Quick Start
+const result = await executePrompt(`
+prompt CodeReviewer {
+  params { code: string }
 
-### Installation
+  body {
+    text\`Review this code for bugs and security issues:
+    \${params.code}\`
+  }
+
+  technique {
+    chainOfThought {
+      step("Security") { text\`Check for vulnerabilities\` }
+      step("Logic") { text\`Identify bugs\` }
+      step("Quality") { text\`Suggest improvements\` }
+    }
+  }
+}
+`, { code: userCode });
+```
+
+## Install
 
 ```bash
 npm install promptel
 ```
 
-### Basic Example (.prompt format)
+## Quick Start
+
+**1. Set your API key:**
+
+```bash
+export PROMPTEL_API_KEY=sk-your-key
+```
+
+**2. Create a prompt:**
 
 ```javascript
-import { parsePrompt, executePrompt } from 'promptel';
+// app.js
+const { executePrompt } = require('promptel');
 
-const prompt = parsePrompt(`
-prompt MathSolver {
+async function main() {
+  const result = await executePrompt(`
+  prompt Summarizer {
+    params { text: string }
+    body { text\`Summarize in 2 sentences: \${params.text}\` }
+    constraints { maxTokens: 100 }
+  }
+  `, { text: "Your long article here..." });
+
+  console.log(result);
+}
+
+main();
+```
+
+**3. Run it:**
+
+```bash
+node app.js
+```
+
+## Features
+
+| Feature | Description |
+|---------|-------------|
+| **Dual Format** | Write prompts in `.prompt` DSL or YAML |
+| **Multi-Provider** | OpenAI, Anthropic, Groq with consistent API |
+| **Techniques** | Built-in Chain-of-Thought, Few-Shot, Tree-of-Thoughts |
+| **Harmony Protocol** | Native multi-channel responses (OpenAI) |
+| **Type-Safe Params** | Typed parameters with defaults and validation |
+| **CLI Included** | Execute and convert prompts from terminal |
+
+## Formats
+
+Promptel supports two equivalent formats:
+
+<table>
+<tr>
+<th>.prompt (DSL)</th>
+<th>YAML</th>
+</tr>
+<tr>
+<td>
+
+```javascript
+prompt Greeter {
   params {
-    problem: string
+    name: string
+    lang?: string = "en"
   }
-
   body {
-    text\`Solve: \${params.problem}\`
+    text`Hello ${params.name}!`
   }
+}
+```
 
+</td>
+<td>
+
+```yaml
+name: Greeter
+params:
+  name:
+    type: string
+    required: true
+  lang:
+    type: string
+    default: "en"
+body:
+  text: "Hello ${params.name}!"
+```
+
+</td>
+</tr>
+</table>
+
+Convert between them:
+
+```bash
+promptel --convert yaml -f prompt.prompt -o prompt.yml
+```
+
+## Providers
+
+Switch providers without changing prompts:
+
+```javascript
+// OpenAI (default)
+await executePrompt(prompt, params, { provider: 'openai' });
+
+// Anthropic Claude
+await executePrompt(prompt, params, { provider: 'claude' });
+
+// Groq
+await executePrompt(prompt, params, { provider: 'groq' });
+```
+
+## Techniques
+
+Built-in prompting techniques:
+
+```javascript
+prompt Analyzer {
   technique {
+    // Step-by-step reasoning
     chainOfThought {
-      step("Analysis") { text\`Break down the problem\` }
-      step("Solution") { text\`Calculate step by step\` }
-      step("Verification") { text\`Verify the answer\` }
+      step("Understand") { text`Parse the input` }
+      step("Analyze") { text`Find patterns` }
+      step("Conclude") { text`Form conclusions` }
     }
   }
 }
-`);
-
-const result = await executePrompt(prompt, {
-  problem: "What is 25% of 240?"
-}, {
-  provider: 'openai',
-  apiKey: process.env.OPENAI_API_KEY
-});
-
-console.log(result);
 ```
 
-### Harmony Protocol Example (gpt-oss)
+Available techniques:
+- `chainOfThought` - Step-by-step reasoning
+- `fewShot` - Learning from examples
+- `zeroShot` - Direct instruction
+- `treeOfThoughts` - Multiple solution paths
+- `reAct` - Reasoning + Actions
+- `selfConsistency` - Multi-sample consensus
+
+## Harmony Protocol
+
+Multi-channel responses for advanced reasoning:
 
 ```javascript
-const harmonyPrompt = parsePrompt(`
-prompt HarmonyReasoning {
+prompt HarmonyExample {
   harmony {
     reasoning: "high"
     channels: ["final", "analysis", "commentary"]
   }
 
-  params {
-    question: string
-  }
-
-  body {
-    text\`\${params.question}\`
-  }
-}
-`);
-
-const result = await executePrompt(harmonyPrompt, {
-  question: "Optimize database query performance for large datasets"
-});
-
-// Multi-channel outputs automatically parsed
-console.log(result.channels.final);      // Clean answer for users
-console.log(result.channels.analysis);   // Detailed reasoning process
-console.log(result.channels.commentary); // Verification and alternatives
-```
-
-### YAML Format Example
-
-The same prompts can be written in YAML format for those who prefer structured configuration:
-
-```yaml
-name: MathSolver
-
-params:
-  problem:
-    type: string
-    required: true
-
-body:
-  text: "Solve: ${params.problem}"
-
-technique:
-  chainOfThought:
-    steps:
-      - name: "Analysis"
-        text: "Break down the problem"
-      - name: "Solution"
-        text: "Calculate step by step"
-      - name: "Verification"
-        text: "Verify the answer"
-```
-
-```javascript
-// Works with both formats automatically
-const yamlPrompt = fs.readFileSync('math_solver.yml', 'utf-8');
-const result = await executePrompt(yamlPrompt, { problem: "What is 25% of 240?" });
-```
-
-## Format Conversion
-
-Convert between .prompt and .yml formats:
-
-```bash
-# Convert .prompt to YAML
-promptel --convert yaml -f solver.prompt -o solver.yml
-
-# Convert YAML to .prompt
-promptel --convert prompt -f solver.yml -o solver.prompt
-```
-
-```javascript
-// Programmatic conversion
-import { FormatConverter } from 'promptel';
-
-const converter = new FormatConverter();
-const yamlVersion = converter.promptToYaml(promptContent);
-const promptVersion = converter.yamlToPrompt(yamlContent);
-```
-
-## Architecture
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  Parser Module  │    │ Executor Module │    │Provider Adapter │
-│                 │    │                 │    │                 │
-│ • Lexer/Parser  │◄──►│ • Harmony Integ │◄──►│ • OpenAI        │
-│ • AST Builder   │    │ • Technique Eng │    │ • Anthropic     │
-│ • Validation    │    │ • Output Format │    │ • Groq          │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-**Flow**: `.prompt/.yml file` → `Parser` → `AST` → `Executor` → `Provider` → `LLM` → `Response Parser` → `Structured Output`
-
-## Advanced Features
-
-### Multi-Provider Support
-```javascript
-// Same prompt, different optimizations per provider
-const executor = new PromptelExecutor(process.env.LLM_PROVIDER);
-const result = await executor.execute(prompt, params);
-
-// Harmony channels for OpenAI gpt-oss
-// Thinking tags for Anthropic Claude
-// Custom reasoning for Groq models
-```
-
-### Built-in Techniques
-- **Chain of Thought**: Step-by-step reasoning
-- **Tree of Thoughts**: Multiple solution paths
-- **ReAct**: Reasoning + Action planning
-- **Self-Consistency**: Multi-solution consensus
-
-### Type-Safe Parameters
-```typescript
-params {
-  temperature: number = 0.7
-  max_tokens?: number
-  difficulty: "easy" | "medium" | "hard"
+  body { text`Solve: ${params.problem}` }
 }
 ```
 
-## CLI Usage
+```javascript
+const result = await executePrompt(harmonyPrompt, { problem: "..." });
+
+console.log(result.channels.final);      // Clean answer
+console.log(result.channels.analysis);   // Reasoning steps
+console.log(result.channels.commentary); // Additional context
+```
+
+## CLI
 
 ```bash
-# Execute prompt file (.prompt format)
-promptel -f solver.prompt -p openai -k $OPENAI_API_KEY --params '{"problem":"2+2"}'
-
-# Execute YAML format
-promptel -f solver.yml -p openai -k $OPENAI_API_KEY --params '{"problem":"2+2"}'
-
-# With output file
-promptel -f prompt.prompt -p anthropic -k $ANTHROPIC_KEY -o result.json
+# Execute prompt
+promptel -f prompt.prompt -p openai -k $KEY --params '{"x":"value"}'
 
 # Convert formats
-promptel --convert yaml -f solver.prompt -o solver.yml
-promptel --convert prompt -f solver.yml -o solver.prompt
+promptel --convert yaml -f prompt.prompt
+
+# Output to file
+promptel -f prompt.yml -p claude -k $KEY -o result.json
 ```
 
-## Requirements
+## API
 
-- Node.js 18+ (LTS recommended)
-- Supported provider API key (OpenAI, Anthropic, or Groq)
+```javascript
+const {
+  parsePrompt,      // Parse .prompt or YAML to AST
+  executePrompt,    // Execute prompt end-to-end
+  FormatConverter,  // Convert between formats
+  PromptelExecutor, // Low-level executor
+  createProvider,   // Create provider instance
+} = require('promptel');
+
+// Parse without executing
+const ast = parsePrompt(promptContent);
+
+// Execute with options
+const result = await executePrompt(content, params, {
+  provider: 'openai',
+  apiKey: process.env.OPENAI_API_KEY
+});
+
+// Convert formats programmatically
+const converter = new FormatConverter();
+const yaml = converter.promptToYaml(promptContent);
+```
+
+## Project Structure
+
+```
+promptel/
+├── src/
+│   ├── index.js          # Main exports
+│   ├── parser.js         # .prompt parser (Chevrotain)
+│   ├── yaml-parser.js    # YAML parser
+│   ├── executor.js       # Execution engine
+│   ├── provider.js       # LLM providers
+│   ├── format-converter.js
+│   └── cli.js
+├── tests/
+├── examples/
+└── documentation/        # MkDocs site
+```
+
+## Development
+
+```bash
+git clone https://github.com/skelf-research/promptel.git
+cd promptel
+npm install
+
+# Run tests
+npm test
+
+# Run linter
+npm run lint
+
+# Run integration tests
+npm run test:integration
+```
 
 ## Documentation
 
-- **[Technical Overview](docs/TECHNICAL_OVERVIEW.md)** - Architecture and implementation details
-- **[Harmony Design](docs/HARMONY_DESIGN.md)** - OpenAI Harmony Protocol integration
-- **[Grammar Reference](docs/GRAMMAR.md)** - Complete language specification
-- **[Dual Format Guide](docs/DUAL_FORMAT_GUIDE.md)** - Complete .prompt ↔ .yml format guide
-- **[Development Tasks](docs/TODO.md)** - Project roadmap and tasks
+Full documentation available at [promptel.dev](https://promptel.dev) or in the `documentation/` folder:
+
+- [Getting Started](documentation/docs/getting-started/installation.md)
+- [Format Guide](documentation/docs/guides/formats.md)
+- [Techniques](documentation/docs/guides/techniques.md)
+- [Providers](documentation/docs/guides/providers.md)
+- [Harmony Protocol](documentation/docs/guides/harmony.md)
+- [API Reference](documentation/docs/reference/api.md)
+- [CLI Reference](documentation/docs/reference/cli.md)
+
+## Requirements
+
+- Node.js 18+
+- API key from OpenAI, Anthropic, or Groq
 
 ## Contributing
 
-We welcome contributions! Please see our development setup:
+Contributions welcome! Please read our contributing guidelines and submit PRs.
 
 ```bash
-git clone https://github.com/terraprompt/promptel.git
-cd promptel
-npm install
-npm test
-npm run lint
+npm run lint      # Check code style
+npm test          # Run tests
+npm run validate  # Full validation
 ```
-
-## Performance
-
-| Operation | Time (ms) | Memory (MB) |
-|-----------|-----------|-------------|
-| Parse prompt | 5-15 | 2-5 |
-| Execute simple | 200-800 | 5-10 |
-| Execute complex | 1000-3000 | 10-20 |
-| Harmony parsing | 50-150 | 8-15 |
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## Support
-
-- **Documentation**: [Technical docs](docs/)
-- **Issues**: [GitHub Issues](https://github.com/terraprompt/promptel/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/terraprompt/promptel/discussions)
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-**Promptel makes advanced prompt engineering accessible, maintainable, and scalable for production AI applications.**
+<p align="center">
+  <b>Built for developers who ship AI to production.</b>
+</p>

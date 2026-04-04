@@ -12,10 +12,15 @@ module.exports = {
         sourceType: 'script'
     },
     rules: {
-        'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+        'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         'no-console': 'off',
         'semi': ['error', 'always'],
-        'quotes': ['error', 'single'],
-        'indent': ['error', 4]
+        'quotes': ['error', 'single', { avoidEscape: true }],
+        'indent': ['error', 4, { SwitchCase: 1 }],
+        'no-trailing-spaces': 'error',
+        'eol-last': ['error', 'always'],
+        'comma-dangle': ['error', 'only-multiline'],
+        'object-curly-spacing': ['error', 'always'],
+        'array-bracket-spacing': ['error', 'never'],
     }
 };
