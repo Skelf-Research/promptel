@@ -1,8 +1,8 @@
 site_name: Promptel
 site_description: Declarative prompt engineering framework with native Harmony Protocol support
-site_url: https://promptel.dev
-repo_url: https://github.com/skelf-research/promptel
-repo_name: skelf-research/promptel
+site_url: https://docs.skelfresearch.com/promptel/
+repo_url: https://github.com/Skelf-Research/promptel
+repo_name: Skelf-Research/promptel
 edit_uri: edit/main/documentation/docs/
 
 theme:
