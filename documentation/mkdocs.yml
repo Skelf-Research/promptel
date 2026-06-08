@@ -24,6 +24,7 @@ theme:
     - navigation.instant
     - navigation.tracking
     - navigation.sections
+    - navigation.indexes
     - navigation.expand
     - navigation.top
     - search.suggest
@@ -84,16 +85,17 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Installation: getting-started/installation.md
-    - Quick Start: getting-started/quickstart.md
-    - Your First Prompt: getting-started/first-prompt.md
-  - Guides:
-    - Prompt Formats: guides/formats.md
-    - Prompting Techniques: guides/techniques.md
-    - Providers: guides/providers.md
-    - Harmony Protocol: guides/harmony.md
-  - Reference:
+  - Docs:
+    - Getting Started:
+      - Installation: getting-started/installation.md
+      - Quick Start: getting-started/quickstart.md
+      - Your First Prompt: getting-started/first-prompt.md
+    - Guides:
+      - Prompt Formats: guides/formats.md
+      - Prompting Techniques: guides/techniques.md
+      - Providers: guides/providers.md
+      - Harmony Protocol: guides/harmony.md
+  - API Reference:
     - CLI: reference/cli.md
     - API: reference/api.md
     - Language Spec: reference/language.md
