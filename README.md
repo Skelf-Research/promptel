@@ -7,6 +7,12 @@
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/skelf-research/promptel/pulls)
 
+<p align="center">
+  <a href="https://promptel.skelfresearch.com"><b>Website</b></a> •
+  <a href="https://docs.skelfresearch.com/promptel">Documentation</a> •
+  <a href="https://skelfresearch.com">Skelf Research</a>
+</p>
+
 ---
 
 ## What is Promptel?
@@ -309,3 +315,15 @@ MIT License - see [LICENSE](LICENSE) for details.
 <p align="center">
   <b>Built for developers who ship AI to production.</b>
 </p>
+
+---
+
+## Part of Skelf Research
+
+`promptel` is built by **[Skelf Research](https://skelfresearch.com)** — an independent UK AI research lab publishing production-grade open-source projects.
+
+🌐 [Website](https://promptel.skelfresearch.com) · 📚 [Documentation](https://docs.skelfresearch.com/promptel) · 🔬 [All projects](https://skelfresearch.com/projects) · 🤗 [Hugging Face](https://huggingface.co/skelfresearch)
+
+**Related projects:** [blogus](https://blogus.skelfresearch.com) (package.lock for prompts), [route-switch](https://route-switch.skelfresearch.com) (self-improving LLM gateway), [perishable](https://perishable.skelfresearch.com) (hide your API keys)
+
+<sub>Released under MIT / Apache-2.0. © Skelf Research Limited.</sub>
