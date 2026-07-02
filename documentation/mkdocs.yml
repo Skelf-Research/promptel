@@ -68,7 +68,7 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
-      user: skelf-research
+      user: Skelf-Research
       repo: promptel
   - pymdownx.mark
   - pymdownx.smartsymbols
@@ -106,7 +106,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/skelf-research/promptel
+      link: https://github.com/Skelf-Research/promptel
     - icon: fontawesome/brands/npm
       link: https://www.npmjs.com/package/promptel
   generator: false
